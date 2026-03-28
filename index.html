@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Bezoekverslag" />
+  <title>Sligro Bezoekverslag</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    body { background: #F0FAF3; font-family: system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+    input, textarea, button { font-family: inherit; }
+    @keyframes mic-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4), 0 0 0 6px rgba(192,57,43,0.1); }
+      50%      { box-shadow: 0 0 0 10px rgba(192,57,43,0.2), 0 0 0 20px rgba(192,57,43,0.05); }
+    }
+    @keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0.1} }
+    @keyframes spin   { to{transform:rotate(360deg)} }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .card { background:#fff; border:1px solid #C8E5CC; border-radius:16px; padding:20px; margin-bottom:14px; box-shadow:0 2px 12px rgba(61,170,92,0.06); animation:fadeIn 0.3s ease; }
+    .label { color:#3DAA5C; font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px; display:block; }
+    .btn-primary { padding:15px 20px; border-radius:12px; width:100%; border:none; background:linear-gradient(135deg,#3DAA5C,#2D8045); color:#fff; font-size:16px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(61,170,92,0.3); touch-action:manipulation; display:block; }
+    .btn-primary:disabled { background:#D4EFD9; color:#A8C8AC; box-shadow:none; cursor:default; }
+    .btn-secondary { padding:13px 20px; border-radius:12px; width:100%; background:#fff; border:1.5px solid #C8E5CC; color:#2E4A35; font-size:15px; font-weight:600; cursor:pointer; touch-action:manipulation; display:block; }
+    .chip { display:inline-flex; align-items:center; gap:4px; background:#E3F5E9; border:1px solid #C8E5CC; border-radius:20px; padding:3px 10px; font-size:12px; color:#1F5C30; font-weight:600; }
+    .input-field { width:100%; padding:12px 14px; background:#fff; border:1.5px solid #C8E5CC; border-radius:10px; color:#1C2B20; font-size:16px; outline:none; -webkit-appearance:none; }
+    .spinner { width:32px; height:32px; border:3px solid #D4EFD9; border-top-color:#3DAA5C; border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto; }
+    .step-dot { width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.3s; }
+    .mic-btn { width:96px; height:96px; border-radius:50%; border:none; cursor:pointer; font-size:38px; display:flex; align-items:center; justify-content:center; touch-action:manipulation; user-select:none; transition:background 0.25s,box-shadow 0.25s; }
+    .mic-btn.idle { background:linear-gradient(135deg,#3DAA5C,#2D8045); box-shadow:0 0 0 6px #D4EFD9,0 6px 24px rgba(61,170,92,0.25); }
+    .mic-btn.recording { background:linear-gradient(135deg,#C0392B,#922b21); box-shadow:0 0 0 8px rgba(192,57,43,0.15),0 6px 24px rgba(192,57,43,0.3); animation:mic-pulse 1.8s ease-in-out infinite; }
+    .rec-dot { width:9px; height:9px; border-radius:50%; background:#C0392B; animation:blink 1s ease-in-out infinite; }
+    .hidden { display:none !important; }
+    .badge-deadline { background:#D4EFD9; color:#1F5C30; font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; white-space:nowrap; }
+    .install-step { display:flex; gap:10px; align-items:flex-start; margin-bottom:12px; }
+    .install-num { width:26px; height:26px; border-radius:50%; background:#3DAA5C; color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+  </style>
+</head>
+<body>
+
+<!-- INSTALL SCREEN -->
+
+<div id="screen-install">
+  <div style="background:linear-gradient(135deg,#1F5C30,#3DAA5C);padding:0 16px">
+    <div style="max-width:520px;margin:0 auto;padding:14px 0;display:flex;align-items:center;gap:12px">
+      <div style="background:#fff;border-radius:8px;padding:5px 10px"><span style="color:#3DAA5C;font-weight:900;font-size:15px;letter-spacing:1px">SLIGRO</span></div>
+      <div style="width:1px;height:20px;background:rgba(255,255,255,0.3)"></div>
+      <span style="color:rgba(255,255,255,0.9);font-size:13px;font-weight:600">📝 Bezoekverslag</span>
+    </div>
+  </div>
+  <div style="max-width:520px;margin:0 auto;padding:24px 16px 60px">
+    <div class="card" style="padding:28px 24px;text-align:center">
+      <div style="font-size:52px;margin-bottom:16px">📱</div>
+      <h2 style="color:#1C2B20;font-size:20px;margin-bottom:8px;font-weight:800">Zo gebruik je de app</h2>
+      <p style="color:#6B8F72;font-size:14px;line-height:1.6;margin-bottom:24px">De app werkt het beste als je hem vanuit Safari op je beginscherm zet. Dan werkt de microfoon gegarandeerd.</p>
+      <div style="background:#E3F5E9;border-radius:12px;padding:20px;text-align:left;margin-bottom:20px">
+        <p style="color:#1F5C30;font-size:13px;font-weight:800;margin-bottom:16px">📲 Zet op beginscherm (iPhone):</p>
+        <div class="install-step"><div class="install-num">1</div><p style="color:#2E4A35;font-size:14px;line-height:1.5">Open dit scherm in <strong>Safari</strong> (niet de Claude app)</p></div>
+        <div class="install-step"><div class="install-num">2</div><p style="color:#2E4A35;font-size:14px;line-height:1.5">Tik op het <strong>deel-icoon ⎋</strong> onderaan Safari</p></div>
+        <div class="install-step"><div class="install-num">3</div><p style="color:#2E4A35;font-size:14px;line-height:1.5">Kies <strong>"Zet op beginscherm"</strong></p></div>
+        <div class="install-step"><div class="install-num">4</div><p style="color:#2E4A35;font-size:14px;line-height:1.5">Tik op <strong>"Voeg toe"</strong> — klaar!</p></div>
+        <div class="install-step" style="margin-bottom:0"><div class="install-num">5</div><p style="color:#2E4A35;font-size:14px;line-height:1.5">Open app via beginscherm → Safari vraagt om <strong>microfoontoestemming</strong> → tik "Sta toe"</p></div>
+      </div>
+      <button class="btn-primary" onclick="startApp()" style="margin-bottom:10px">✅ Start de app</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+
+<div id="screen-app" class="hidden">
+  <div style="background:linear-gradient(135deg,#1F5C30,#3DAA5C);padding:0 16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(31,92,48,0.25)">
+    <div style="max-width:520px;margin:0 auto;padding:14px 0;display:flex;align-items:center;gap:12px">
+      <div style="background:#fff;border-radius:8px;padding:5px 10px"><span style="color:#3DAA5C;font-weight:900;font-size:15px;letter-spacing:1px">SLIGRO</span></div>
+      <div style="width:1px;height:20px;background:rgba(255,255,255,0.3)"></div>
+      <span style="color:rgba(255,255,255,0.9);font-size:13px;font-weight:600">📝 Bezoekverslag</span>
+    </div>
+  </div>
+
+  <div style="max-width:520px;margin:0 auto;padding:20px 16px 70px">
+    <div id="stepbar" style="display:flex;align-items:flex-start;margin-bottom:28px;padding:0 4px"></div>
+
+```
+<!-- Mic geblokkeerd -->
+<div id="mic-blocked" class="card hidden" style="background:#FFF8E1;border:1px solid #FFD54F">
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px">
+    <span style="font-size:28px;flex-shrink:0">🔒</span>
+    <div>
+      <p style="font-weight:800;font-size:16px;color:#1C2B20;margin-bottom:4px">Microfoon geblokkeerd</p>
+      <p style="font-size:13px;color:#2E4A35;line-height:1.5">Pas dit aan in Safari:</p>
+    </div>
+  </div>
+  <div style="background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1px solid #FFD54F">
+    <div class="install-step"><div class="install-num">1</div><p style="color:#2E4A35;font-size:13px;line-height:1.5">Tik op <strong>AA</strong> of 🔒 in de adresbalk</p></div>
+    <div class="install-step"><div class="install-num">2</div><p style="color:#2E4A35;font-size:13px;line-height:1.5">Tik op <strong>Website-instellingen</strong></p></div>
+    <div class="install-step"><div class="install-num">3</div><p style="color:#2E4A35;font-size:13px;line-height:1.5">Zet <strong>Microfoon</strong> op <strong>Toestaan</strong></p></div>
+    <div class="install-step" style="margin-bottom:0"><div class="install-num">4</div><p style="color:#2E4A35;font-size:13px;line-height:1.5">Kom terug en tik opnieuw op de microfoonknop</p></div>
+  </div>
+  <button class="btn-primary" onclick="hideMicBlocked()">✅ Gedaan, probeer opnieuw</button>
+</div>
+
+<!-- Error -->
+<div id="error-banner" class="hidden" style="background:#FDECEA;border:1px solid #C0392B;border-radius:12px;padding:12px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+  <span id="error-text" style="color:#C0392B;font-size:14px"></span>
+  <button onclick="hideError()" style="background:none;border:none;color:#C0392B;font-size:20px;cursor:pointer;padding:0;line-height:1">×</button>
+</div>
+
+<!-- Fase: Klant -->
+<div id="phase-klant" class="card" style="padding:28px 20px">
+  <div style="background:#E3F5E9;border-radius:16px;padding:16px 20px;margin-bottom:28px;position:relative">
+    <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #E3F5E9"></div>
+    <p style="font-size:17px;font-weight:700;color:#1C2B20;line-height:1.5;text-align:center;margin-bottom:6px">Bij welke klant was je en wat is zijn klantnummer?</p>
+    <p style="font-size:12px;color:#6B8F72;text-align:center;margin:0">Spreek je antwoord in en tik daarna op stop</p>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center">
+    <button id="mic-btn-klant" class="mic-btn idle" onclick="toggleRecording('klant')">🎙️</button>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
+      <div id="rec-dot-klant" class="rec-dot hidden"></div>
+      <span id="timer-klant" style="font-size:26px;color:#A8C8AC;letter-spacing:4px;font-variant-numeric:tabular-nums;font-weight:200;font-family:monospace">00:00</span>
+    </div>
+    <p id="mic-hint-klant" style="color:#6B8F72;font-size:13px;margin-top:6px;font-weight:500">🎙 Tik om te beginnen</p>
+  </div>
+</div>
+
+<!-- Fase: Gesprek -->
+<div id="phase-gesprek" class="hidden">
+  <div id="klant-badge" class="card" style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border:1.5px solid #3DAA5C">
+    <div style="width:44px;height:44px;border-radius:12px;background:#3DAA5C;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏢</div>
+    <div style="flex:1">
+      <p id="badge-naam" style="font-weight:800;font-size:16px;color:#1C2B20;margin-bottom:2px"></p>
+      <p id="badge-info" style="font-size:13px;color:#6B8F72;margin:0"></p>
+    </div>
+    <button onclick="goToKlant()" style="background:none;border:none;color:#6B8F72;cursor:pointer;font-size:13px;padding:4px">✏️</button>
+  </div>
+  <div id="manual-klant" class="card hidden">
+    <span class="label">Niet herkend? Vul handmatig aan</span>
+    <div style="display:flex;gap:10px">
+      <input class="input-field" id="input-naam" placeholder="Klantnaam" autocorrect="off" style="flex:2" oninput="updateKlant()">
+      <input class="input-field" id="input-nummer" placeholder="Klantnr." style="flex:1" oninput="updateKlant()">
+    </div>
+  </div>
+  <div class="card" style="padding:28px 20px">
+    <div style="background:#E3F5E9;border-radius:16px;padding:16px 20px;margin-bottom:28px;position:relative">
+      <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #E3F5E9"></div>
+      <p style="font-size:17px;font-weight:700;color:#1C2B20;line-height:1.5;text-align:center;margin-bottom:6px">Hoe was je gesprek?</p>
+      <p style="font-size:12px;color:#6B8F72;text-align:center;margin:0">Vertel wat er is besproken, welke afspraken zijn gemaakt en wat de acties zijn</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <button id="mic-btn-gesprek" class="mic-btn idle" onclick="toggleRecording('gesprek')">🎙️</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
+        <div id="rec-dot-gesprek" class="rec-dot hidden"></div>
+        <span id="timer-gesprek" style="font-size:26px;color:#A8C8AC;letter-spacing:4px;font-variant-numeric:tabular-nums;font-weight:200;font-family:monospace">00:00</span>
+      </div>
+      <p id="mic-hint-gesprek" style="color:#6B8F72;font-size:13px;margin-top:6px;font-weight:500">🎙 Tik om te beginnen</p>
+    </div>
+  </div>
+</div>
+
+<!-- Fase: Loading -->
+<div id="phase-loading" class="card hidden" style="text-align:center;padding:48px 24px">
+  <div class="spinner"></div>
+  <p id="loading-msg" style="color:#2E4A35;font-size:16px;font-weight:600;margin:20px 0 4px"></p>
+  <p style="color:#6B8F72;font-size:13px;margin:0">Even geduld...</p>
+</div>
+
+<!-- Fase: Verslag -->
+<div id="phase-verslag" class="hidden"></div>
+```
+
+  </div>
+</div>
+
+<script>
+const FIXED_EMAIL = "svanreijmersdal@sligro.nl";
+const API = "https://api.anthropic.com/v1/messages";
+const STEPS = ["🏢 Klant","💬 Gesprek","📋 Verslag","✅ Klaar"];
+
+let S = { phase:"klant", stepIdx:0, isRecording:false, currentMic:"klant", duration:0, klantNaam:"", klantNummer:"", datum:new Date().toISOString().split("T")[0], report:null, sent:false };
+let mediaRecorder=null, audioChunks=[], mimeType="", timerInterval=null;
+
+function $(id){return document.getElementById(id);}
+function showError(m){$("error-text").textContent=m;$("error-banner").classList.remove("hidden");}
+function hideError(){$("error-banner").classList.add("hidden");}
+function hideMicBlocked(){$("mic-blocked").classList.add("hidden");}
+
+function getSupportedMime(){
+  for(const t of["audio/mp4","audio/webm;codecs=opus","audio/webm","audio/ogg"]){
+    try{if(MediaRecorder.isTypeSupported(t))return t;}catch(e){}
+  }return "";
+}
+
+function renderStepBar(current){
+  const bar=$("stepbar"); bar.innerHTML="";
+  STEPS.forEach((s,i)=>{
+    const emoji=s.split(" ")[0], label=s.split(" ").slice(1).join(" ").toUpperCase();
+    const wrap=document.createElement("div");
+    wrap.style.cssText="display:flex;flex-direction:column;align-items:center;gap:4px";
+    wrap.innerHTML=`<div class="step-dot" style="background:${i<current?"#3DAA5C":i===current?"#fff":"#E3F5E9"};border:2.5px solid ${i<=current?"#3DAA5C":"#C8E5CC"};box-shadow:${i===current?"0 0 0 4px #D4EFD9":"none"}">${i<current?"✓":"<span>"+emoji+"</span>"}</div><span style="font-size:9px;font-weight:${i===current?700:500};color:${i===current?"#3DAA5C":"#A8C8AC"};letter-spacing:0.5px;white-space:nowrap">${label}</span>`;
+    bar.appendChild(wrap);
+    if(i<STEPS.length-1){const l=document.createElement("div");l.style.cssText=`flex:1;height:2.5px;background:${i<current?"#3DAA5C":"#C8E5CC"};margin:0 5px;margin-bottom:20px;border-radius:2px`;bar.appendChild(l);}
+  });
+}
+
+function showPhase(name){
+  ["klant","gesprek","loading","verslag"].forEach(p=>{
+    const el=$(("phase-"+p)); if(el)el.classList.toggle("hidden",p!==name);
+  });
+}
+
+function setRecUI(which,rec){
+  const btn=$("mic-btn-"+which),dot=$("rec-dot-"+which),hint=$("mic-hint-"+which);
+  btn.className="mic-btn "+(rec?"recording":"idle");
+  btn.textContent=rec?"⏹️":"🎙️";
+  dot.classList.toggle("hidden",!rec);
+  hint.textContent=rec?"⏹ Tik om te stoppen":"🎙 Tik om te beginnen";
+}
+
+function startTimer(which){
+  S.duration=0; clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    S.duration++;
+    const mm=String(Math.floor(S.duration/60)).padStart(2,"0"),ss=String(S.duration%60).padStart(2,"0");
+    $("timer-"+which).textContent=`${mm}:${ss}`;
+  },1000);
+}
+
+function goToKlant(){S.phase="klant";S.stepIdx=0;showPhase("klant");renderStepBar(0);}
+function updateKlant(){S.klantNaam=$("input-naam").value;S.klantNummer=$("input-nummer").value;updateBadge();}
+function updateBadge(){$("badge-naam").textContent=S.klantNaam||"Klant";$("badge-info").textContent=`Klantnr. ${S.klantNummer||"—"} · ${S.datum}`;}
+
+// ── KRITIEK: directe .then() aanroep zodat Safari de microfoon toestaat ──
+function toggleRecording(which){
+  if(S.isRecording){
+    try{mediaRecorder&&mediaRecorder.stop();}catch(e){}
+    clearInterval(timerInterval);
+    S.isRecording=false; setRecUI(which,false); return;
+  }
+  S.currentMic=which;
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    mimeType=getSupportedMime();
+    let mr; try{mr=new MediaRecorder(stream,mimeType?{mimeType}:{});}catch(e){mr=new MediaRecorder(stream);}
+    audioChunks=[]; mr.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data);};
+    mr.onstop=function(){
+      const blob=new Blob(audioChunks,{type:mimeType||"audio/webm"});
+      stream.getTracks().forEach(t=>t.stop());
+      onAudioDone(blob,S.currentMic);
+    };
+    mr.start(250); mediaRecorder=mr;
+    S.isRecording=true; setRecUI(which,true); startTimer(which);
+  }).catch(function(err){
+    if(err.name==="NotAllowedError"||err.name==="PermissionDeniedError") $("mic-blocked").classList.remove("hidden");
+    else if(err.name==="NotFoundError") showError("Geen microfoon gevonden.");
+    else showError("Microfoon fout: "+err.message);
+  });
+}
+
+async function blobToBase64(blob){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(blob);});
+}
+
+async function api(body){
+  const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  return r.json();
+}
+
+async function onAudioDone(blob,which){
+  showPhase("loading"); renderStepBar(which==="klant"?0:1);
+  const base64=await blobToBase64(blob);
+  const mime=mimeType||"audio/webm";
+
+  if(which==="klant"){
+    $("loading-msg").textContent="🔍 Klantgegevens herkennen...";
+    try{
+      const d=await api({model:"claude-sonnet-4-20250514",max_tokens:300,
+        system:`Extraheer klantnaam en klantnummer. Antwoord ALLEEN als JSON: {"klantNaam":"...","klantNummer":"..."}`,
+        messages:[{role:"user",content:[{type:"text",text:"Extraheer klantnaam en klantnummer."},{type:"document",source:{type:"base64",media_type:mime,data:base64}}]}]});
+      if(d.content?.[0]?.text){const p=JSON.parse(d.content[0].text.replace(/```json|```/g,"").trim());if(p.klantNaam)S.klantNaam=p.klantNaam;if(p.klantNummer)S.klantNummer=p.klantNummer;}
+    }catch(e){}
+    updateBadge();$("input-naam").value=S.klantNaam;$("input-nummer").value=S.klantNummer;
+    if(!S.klantNaam||!S.klantNummer)$("manual-klant").classList.remove("hidden");
+    $("timer-gesprek").textContent="00:00";
+    S.stepIdx=1; showPhase("gesprek"); renderStepBar(1);
+  } else {
+    $("loading-msg").textContent="✍️ Gesprek transcriberen...";
+    let rawText="";
+    try{const t=await api({model:"claude-sonnet-4-20250514",max_tokens:2000,messages:[{role:"user",content:[{type:"text",text:"Transcribeer volledig, geef ALLEEN de transcriptie."},{type:"document",source:{type:"base64",media_type:mime,data:base64}}]}]});rawText=t.content?.[0]?.text||"";}catch(e){}
+
+    $("loading-msg").textContent="📋 Verslag structureren...";
+    try{
+      const v=await api({model:"claude-sonnet-4-20250514",max_tokens:1500,
+        system:`Structureer bezoekverslag Sligro accountmanager. ALLEEN JSON zonder backticks. Velden: samenvatting, besprokenOnderwerpen (array), afspraken (array), acties (array met actie+deadline), followUp.`,
+        messages:[{role:"user",content:`Klant: ${S.klantNaam} (nr. ${S.klantNummer})\nDatum: ${S.datum}\n\n${rawText||"Leeg verslag."}`}]});
+      S.report=JSON.parse(v.content[0].text.replace(/```json|```/g,"").trim());
+    }catch(e){showError("Verwerking mislukt.");showPhase("gesprek");renderStepBar(1);return;}
+
+    $("loading-msg").textContent="📧 Verslag versturen...";
+    await sendEmail(S.report);
+    renderReport(S.report);
+    S.stepIdx=2; showPhase("verslag"); renderStepBar(2);
+  }
+}
+
+async function sendEmail(rpt){
+  const acties=(rpt.acties||[]).map(a=>`• ${a.actie}${a.deadline?` (${a.deadline})`:""}`).join("\n");
+  const body=`Bezoekverslag — ${S.klantNaam} (nr. ${S.klantNummer}) — ${S.datum}\n\nSamenvatting:\n${rpt.samenvatting||""}\n\nBesproken:\n${(rpt.besprokenOnderwerpen||[]).map(o=>`• ${o}`).join("\n")}\n\nAfspraken:\n${(rpt.afspraken||[]).map(a=>`• ${a}`).join("\n")}\n\nActies:\n${acties}\n\nFollow-up:\n${rpt.followUp||""}`;
+  try{await api({model:"claude-sonnet-4-20250514",max_tokens:500,messages:[{role:"user",content:`Stuur e-mail naar ${FIXED_EMAIL} subject "Bezoekverslag ${S.klantNaam} (${S.klantNummer}) — ${S.datum}" body:\n${body}`}],mcp_servers:[{type:"url",url:"https://gmail.mcp.claude.com/mcp",name:"gmail-mcp"}]});S.sent=true;}catch(e){}
+}
+
+function renderReport(rpt){
+  const el=$("phase-verslag");
+  const sentBadge=S.sent?`<div style="margin-top:12px;background:rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:6px"><span>✅</span><span style="color:#fff;font-size:12px;font-weight:600">Verstuurd naar ${FIXED_EMAIL}</span></div>`:"";
+  const chips=(rpt.besprokenOnderwerpen||[]).map(o=>`<span class="chip">• ${o}</span>`).join(" ");
+  const afspraken=(rpt.afspraken||[]).map(a=>`<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span style="color:#3DAA5C;font-weight:700;flex-shrink:0">✓</span><p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.5">${a}</p></div>`).join("");
+  const acties=(rpt.acties||[]).map((a,i,arr)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:${i<arr.length-1?12:0}px;margin-bottom:${i<arr.length-1?12:0}px;border-bottom:${i<arr.length-1?"1px solid #E3F5E9":"none"}"><div style="display:flex;gap:8px;flex:1"><span style="color:#3DAA5C;font-weight:700;flex-shrink:0">→</span><p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.5">${a.actie}</p></div>${a.deadline?`<span class="badge-deadline">📅 ${a.deadline}</span>`:""}</div>`).join("");
+  el.innerHTML=`
+    <div class="card" style="background:linear-gradient(135deg,#1F5C30,#2D8045);border:none;padding:18px 20px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:24px">🏢</div>
+        <div><p style="font-weight:800;font-size:18px;color:#fff;margin-bottom:3px">${S.klantNaam}</p><p style="font-size:13px;color:rgba(255,255,255,0.7);margin:0">Nr. ${S.klantNummer} · 📅 ${S.datum}</p></div>
+      </div>${sentBadge}
+    </div>
+    ${rpt.samenvatting?`<div class="card"><span class="label">💡 Samenvatting</span><p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.75">${rpt.samenvatting}</p></div>`:""}
+    ${chips?`<div class="card"><span class="label">🗣 Besproken</span><div style="display:flex;flex-wrap:wrap;gap:8px">${chips}</div></div>`:""}
+    ${afspraken?`<div class="card"><span class="label">🤝 Afspraken</span>${afspraken}</div>`:""}
+    ${acties?`<div class="card"><span class="label">⚡ Acties</span>${acties}</div>`:""}
+    ${rpt.followUp?`<div class="card" style="background:#E3F5E9"><span class="label">🔄 Follow-up</span><p style="color:#2E4A35;font-size:14px;margin:0;line-height:1.6">${rpt.followUp}</p></div>`:""}
+    <div class="card">
+      <span class="label">📤 Delen</span>
+      ${!S.sent?`<button class="btn-primary" onclick="retrySend()" style="margin-bottom:10px">📧 Stuur naar ${FIXED_EMAIL}</button>`:""}
+      <button class="btn-secondary" onclick="downloadICS()">📅 Download agenda (.ics voor Outlook)</button>
+      <div style="margin-top:14px;text-align:center"><button onclick="resetApp()" style="background:none;border:none;color:#6B8F72;font-size:14px;cursor:pointer;padding:8px">+ Nieuw bezoek starten</button></div>
+    </div>`;
+}
+
+async function retrySend(){if(S.report){await sendEmail(S.report);renderReport(S.report);}}
+
+function downloadICS(){
+  const d=S.datum.replace(/-/g,""),desc=[...(S.report.afspraken||[]),...(S.report.acties||[]).map(a=>`Actie: ${a.actie}`)].join("\\n");
+  const ics=["BEGIN:VCALENDAR","VERSION:2.0","BEGIN:VEVENT",`SUMMARY:Bezoek ${S.klantNaam} (${S.klantNummer})`,`DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${d}`,`DESCRIPTION:${desc}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));a.download=`bezoek-${S.klantNaam.replace(/\s+/g,"-")}-${S.datum}.ics`;a.click();
+}
+
+function resetApp(){
+  S={phase:"klant",stepIdx:0,isRecording:false,currentMic:"klant",duration:0,klantNaam:"",klantNummer:"",datum:new Date().toISOString().split("T")[0],report:null,sent:false};
+  $("timer-klant").textContent="00:00";$("phase-verslag").innerHTML="";
+  $("manual-klant").classList.add("hidden");$("mic-blocked").classList.add("hidden");
+  hideError();setRecUI("klant",false);showPhase("klant");renderStepBar(0);
+}
+
+function startApp(){$("screen-install").classList.add("hidden");$("screen-app").classList.remove("hidden");renderStepBar(0);}
+
+// Als al geïnstalleerd als PWA → sla installatiescherm over
+if(window.navigator.standalone===true) startApp();
+</script>
+
+</body>
+</html>
