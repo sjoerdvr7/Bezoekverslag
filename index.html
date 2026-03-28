@@ -2,40 +2,49 @@
 
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Bezoekverslag" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Bezoekverslag"/>
   <title>Sligro Bezoekverslag</title>
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
     body{background:#F0FAF3;font-family:system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
     input,textarea,button{font-family:inherit}
-    @keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.4),0 0 0 6px rgba(192,57,43,0.1)}50%{box-shadow:0 0 0 10px rgba(192,57,43,0.2),0 0 0 20px rgba(192,57,43,0.05)}}
+    @keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.4),0 0 0 6px rgba(192,57,43,0.1)}50%{box-shadow:0 0 0 12px rgba(192,57,43,0.2),0 0 0 24px rgba(192,57,43,0.05)}}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0.1}}
     @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes wave{0%,100%{transform:scaleY(0.3)}50%{transform:scaleY(1)}}
-    .card{background:#fff;border:1px solid #C8E5CC;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(61,170,92,0.06);animation:fadeIn 0.3s ease}
-    .label{color:#3DAA5C;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block}
-    .btn-primary{padding:15px 20px;border-radius:12px;width:100%;border:none;background:linear-gradient(135deg,#3DAA5C,#2D8045);color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(61,170,92,0.3);touch-action:manipulation;display:block;margin-bottom:0}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes speaking{0%,100%{transform:scaleY(0.4)}50%{transform:scaleY(1)}}
+    .card{background:#fff;border:1px solid #C8E5CC;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(61,170,92,0.06);animation:fadeIn 0.35s ease}
+    .label{color:#3DAA5C;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block}
+    .btn-primary{padding:15px 20px;border-radius:12px;width:100%;border:none;background:linear-gradient(135deg,#3DAA5C,#2D8045);color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(61,170,92,0.3);touch-action:manipulation;display:block}
     .btn-primary:disabled{background:#D4EFD9;color:#A8C8AC;box-shadow:none;cursor:default}
     .btn-secondary{padding:13px 20px;border-radius:12px;width:100%;background:#fff;border:1.5px solid #C8E5CC;color:#2E4A35;font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation;display:block}
-    .chip{display:inline-flex;align-items:center;gap:4px;background:#E3F5E9;border:1px solid #C8E5CC;border-radius:20px;padding:3px 10px;font-size:12px;color:#1F5C30;font-weight:600}
     .input-field{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #C8E5CC;border-radius:10px;color:#1C2B20;font-size:16px;outline:none;-webkit-appearance:none}
-    .textarea-field{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #C8E5CC;border-radius:10px;color:#1C2B20;font-size:15px;outline:none;-webkit-appearance:none;min-height:120px;resize:vertical;line-height:1.6}
-    .spinner{width:32px;height:32px;border:3px solid #D4EFD9;border-top-color:#3DAA5C;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto}
-    .mic-btn{width:96px;height:96px;border-radius:50%;border:none;cursor:pointer;font-size:38px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;user-select:none;transition:background 0.25s,box-shadow 0.25s}
+    .textarea-field{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #C8E5CC;border-radius:10px;color:#1C2B20;font-size:15px;outline:none;-webkit-appearance:none;resize:vertical;line-height:1.6}
+    .mic-btn{width:88px;height:88px;border-radius:50%;border:none;cursor:pointer;font-size:34px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;user-select:none;transition:all 0.25s}
     .mic-btn.idle{background:linear-gradient(135deg,#3DAA5C,#2D8045);box-shadow:0 0 0 6px #D4EFD9,0 6px 24px rgba(61,170,92,0.25)}
     .mic-btn.recording{background:linear-gradient(135deg,#C0392B,#922b21);box-shadow:0 0 0 8px rgba(192,57,43,0.15),0 6px 24px rgba(192,57,43,0.3);animation:mic-pulse 1.8s ease-in-out infinite}
+    .mic-btn.speaking-state{background:linear-gradient(135deg,#2980b9,#1a5276);box-shadow:0 0 0 6px rgba(41,128,185,0.15),0 6px 24px rgba(41,128,185,0.25);cursor:default}
     .rec-dot{width:9px;height:9px;border-radius:50%;background:#C0392B;animation:blink 1s ease-in-out infinite}
     .hidden{display:none!important}
+    .live-text{background:#F0FAF3;border:1.5px solid #C8E5CC;border-radius:10px;padding:12px 14px;min-height:50px;font-size:15px;color:#1C2B20;line-height:1.6;margin-top:14px;width:100%;word-break:break-word}
     .badge-deadline{background:#D4EFD9;color:#1F5C30;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
-    .install-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
-    .install-num{width:26px;height:26px;border-radius:50%;background:#3DAA5C;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-    .live-text{background:#F0FAF3;border:1.5px solid #C8E5CC;border-radius:10px;padding:12px 14px;min-height:60px;font-size:15px;color:#1C2B20;line-height:1.6;margin-top:16px;width:100%}
-    .wave-bar{width:4px;border-radius:2px;background:#3DAA5C;animation:wave 0.8s ease-in-out infinite}
+    .progress-bar{height:4px;background:#D4EFD9;border-radius:2px;margin-bottom:28px;overflow:hidden}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#3DAA5C,#2D8045);border-radius:2px;transition:width 0.4s ease}
+    .vraag-bubble{background:#E3F5E9;border-radius:16px;padding:18px 20px;margin-bottom:24px;position:relative;text-align:center}
+    .vraag-bubble::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #E3F5E9}
+    .wave-bars{display:flex;align-items:center;gap:3px;height:24px}
+    .wave-bar{width:4px;border-radius:2px;background:#2980b9}
+    .wave-bar:nth-child(1){animation:speaking 0.6s ease-in-out infinite}
+    .wave-bar:nth-child(2){animation:speaking 0.6s ease-in-out 0.1s infinite}
+    .wave-bar:nth-child(3){animation:speaking 0.6s ease-in-out 0.2s infinite}
+    .wave-bar:nth-child(4){animation:speaking 0.6s ease-in-out 0.15s infinite}
+    .wave-bar:nth-child(5){animation:speaking 0.6s ease-in-out 0.05s infinite}
+    .answer-card{background:#fff;border:1.5px solid #3DAA5C;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .score-display{font-size:48px;font-weight:800;color:#3DAA5C;text-align:center;margin:8px 0}
   </style>
 </head>
 <body>
@@ -50,11 +59,15 @@
   </div>
 </div>
 
-<div style="max-width:520px;margin:0 auto;padding:20px 16px 70px">
+<div id="main" style="max-width:520px;margin:0 auto;padding:20px 16px 80px">
 
-  <!-- Stepbar -->
+  <!-- Stappenindicator -->
 
-  <div id="stepbar" style="display:flex;align-items:flex-start;margin-bottom:28px;padding:0 4px"></div>
+  <div id="stepbar" style="display:flex;align-items:flex-start;margin-bottom:12px;padding:0 2px"></div>
+
+  <!-- Progress bar -->
+
+  <div class="progress-bar" style="margin-bottom:24px"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
 
   <!-- Error -->
 
@@ -63,92 +76,150 @@
     <button onclick="hideError()" style="background:none;border:none;color:#C0392B;font-size:20px;cursor:pointer;padding:0;line-height:1">×</button>
   </div>
 
-  <!-- FASE 1: Klant -->
+  <!-- Startscherm -->
 
-  <div id="phase-klant">
-    <div class="card" style="padding:28px 20px">
-      <div style="background:#E3F5E9;border-radius:16px;padding:16px 20px;margin-bottom:28px;position:relative">
-        <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #E3F5E9"></div>
-        <p style="font-size:17px;font-weight:700;color:#1C2B20;line-height:1.5;text-align:center;margin-bottom:6px">Bij welke klant was je en wat is zijn klantnummer?</p>
-        <p style="font-size:12px;color:#6B8F72;text-align:center;margin:0">Spreek je antwoord in — ik luister live mee</p>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center">
-        <button id="mic-btn-klant" class="mic-btn idle" onclick="toggleSpeech('klant')">🎙️</button>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
-          <div id="rec-dot-klant" class="rec-dot hidden"></div>
-          <span id="timer-klant" style="font-size:26px;color:#A8C8AC;letter-spacing:4px;font-variant-numeric:tabular-nums;font-weight:200;font-family:monospace">00:00</span>
-        </div>
-        <p id="mic-hint-klant" style="color:#6B8F72;font-size:13px;margin-top:6px;font-weight:500">🎙 Tik om te beginnen</p>
-        <div id="live-klant" class="live-text hidden" style="text-align:left"><span style="color:#A8C8AC;font-style:italic">Luisteren...</span></div>
+  <div id="start-screen" class="card" style="padding:40px 24px;text-align:center">
+    <div style="margin-bottom:24px">
+      <div style="display:inline-flex;align-items:center;gap:0;background:#3DAA5C;border-radius:10px;padding:10px 20px">
+        <span style="color:#fff;font-weight:900;font-size:26px;letter-spacing:2px;font-family:Arial Black,Arial,sans-serif">SLIGRO</span>
       </div>
     </div>
-    <div class="card hidden" id="klant-manual-card">
-      <span class="label">✏️ Controleer of pas aan</span>
-      <div style="display:flex;gap:10px;margin-bottom:10px">
-        <input class="input-field" id="input-naam" placeholder="Klantnaam" style="flex:2" autocorrect="off">
-        <input class="input-field" id="input-nummer" placeholder="Klantnr." style="flex:1">
+    <h2 style="color:#1C2B20;font-size:22px;font-weight:800;margin-bottom:28px">Leg je bezoek nu vast!</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:32px">
+      <div style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border-radius:12px;padding:12px 16px">
+        <span style="width:28px;height:28px;border-radius:50%;background:#3DAA5C;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
+        <span style="color:#2E4A35;font-size:15px;font-weight:600">🔢 Klantnummer</span>
       </div>
-      <button class="btn-primary" onclick="bevestigKlant()">✅ Bevestig en ga door</button>
+      <div style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border-radius:12px;padding:12px 16px">
+        <span style="width:28px;height:28px;border-radius:50%;background:#3DAA5C;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span>
+        <span style="color:#2E4A35;font-size:15px;font-weight:600">🏢 Klantnaam</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border-radius:12px;padding:12px 16px">
+        <span style="width:28px;height:28px;border-radius:50%;background:#3DAA5C;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span>
+        <span style="color:#2E4A35;font-size:15px;font-weight:600">💬 Samenvatting bezoek</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border-radius:12px;padding:12px 16px">
+        <span style="width:28px;height:28px;border-radius:50%;background:#3DAA5C;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</span>
+        <span style="color:#2E4A35;font-size:15px;font-weight:600">🤝 Gemaakte afspraken</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border-radius:12px;padding:12px 16px">
+        <span style="width:28px;height:28px;border-radius:50%;background:#3DAA5C;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</span>
+        <span style="color:#2E4A35;font-size:15px;font-weight:600">⭐ Tevredenheidscijfer</span>
+      </div>
     </div>
+    <button class="btn-primary" onclick="startInterview()">🎙️ Leg je klantbezoek nu vast!</button>
   </div>
 
-  <!-- FASE 2: Gesprek -->
+  <!-- Interview scherm -->
 
-  <div id="phase-gesprek" class="hidden">
-    <div class="card" style="display:flex;align-items:center;gap:14px;background:#E3F5E9;border:1.5px solid #3DAA5C">
-      <div style="width:44px;height:44px;border-radius:12px;background:#3DAA5C;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏢</div>
-      <div style="flex:1">
-        <p id="badge-naam" style="font-weight:800;font-size:16px;color:#1C2B20;margin-bottom:2px"></p>
-        <p id="badge-info" style="font-size:13px;color:#6B8F72;margin:0"></p>
-      </div>
-      <button onclick="goToKlant()" style="background:none;border:none;color:#6B8F72;cursor:pointer;font-size:13px;padding:4px">✏️</button>
-    </div>
-    <div class="card" style="padding:28px 20px">
-      <div style="background:#E3F5E9;border-radius:16px;padding:16px 20px;margin-bottom:28px;position:relative">
-        <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #E3F5E9"></div>
-        <p style="font-size:17px;font-weight:700;color:#1C2B20;line-height:1.5;text-align:center;margin-bottom:6px">Hoe was je gesprek?</p>
-        <p style="font-size:12px;color:#6B8F72;text-align:center;margin:0">Vertel wat er besproken is, welke afspraken zijn gemaakt en wat de acties zijn</p>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center">
-        <button id="mic-btn-gesprek" class="mic-btn idle" onclick="toggleSpeech('gesprek')">🎙️</button>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:16px">
-          <div id="rec-dot-gesprek" class="rec-dot hidden"></div>
-          <span id="timer-gesprek" style="font-size:26px;color:#A8C8AC;letter-spacing:4px;font-variant-numeric:tabular-nums;font-weight:200;font-family:monospace">00:00</span>
-        </div>
-        <p id="mic-hint-gesprek" style="color:#6B8F72;font-size:13px;margin-top:6px;font-weight:500">🎙 Tik om te beginnen</p>
-        <div id="live-gesprek" class="live-text hidden"></div>
-      </div>
-    </div>
-    <div id="gesprek-klaar-card" class="card hidden">
-      <span class="label">✏️ Controleer of pas aan</span>
-      <textarea class="textarea-field" id="textarea-gesprek" placeholder="Tekst van je gesprek..."></textarea>
-      <button class="btn-primary" style="margin-top:10px" onclick="maakVerslag()">📋 Maak verslag</button>
-    </div>
+  <div id="interview-screen" class="hidden">
+    <div class="card" style="padding:28px 20px;text-align:center">
+
+```
+  <!-- Vraag bubble -->
+  <div class="vraag-bubble" id="vraag-bubble">
+    <p id="vraag-tekst" style="font-size:17px;font-weight:700;color:#1C2B20;line-height:1.5;margin-bottom:4px"></p>
+    <p id="vraag-hint" style="font-size:12px;color:#6B8F72;margin:0"></p>
   </div>
 
-  <!-- FASE 3: Verslag -->
+  <!-- Mic / speaking knop -->
+  <div style="display:flex;flex-direction:column;align-items:center;margin-top:8px">
+    <button id="mic-btn" class="mic-btn idle" onclick="onMicTap()">🎙️</button>
 
-  <div id="phase-verslag" class="hidden"></div>
+    <!-- Speaking indicator -->
+    <div id="speaking-indicator" class="hidden" style="display:flex;align-items:center;gap:8px;margin-top:12px">
+      <div class="wave-bars">
+        <div class="wave-bar" style="height:12px"></div>
+        <div class="wave-bar" style="height:18px"></div>
+        <div class="wave-bar" style="height:22px"></div>
+        <div class="wave-bar" style="height:16px"></div>
+        <div class="wave-bar" style="height:10px"></div>
+      </div>
+      <span style="color:#2980b9;font-size:13px;font-weight:600">Spreekt...</span>
+    </div>
+
+    <!-- Timer -->
+    <div id="timer-row" style="display:flex;align-items:center;gap:8px;margin-top:14px" class="hidden">
+      <div id="rec-dot" class="rec-dot"></div>
+      <span id="timer" style="font-size:24px;color:#C0392B;letter-spacing:3px;font-variant-numeric:tabular-nums;font-weight:200;font-family:monospace">00:00</span>
+    </div>
+
+    <p id="mic-hint" style="color:#6B8F72;font-size:13px;margin-top:8px;font-weight:500">Wacht even...</p>
+
+    <!-- Live tekst -->
+    <div id="live-tekst" class="live-text hidden" style="text-align:left;margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- Review + volgende -->
+<div id="review-card" class="card hidden">
+  <span class="label">✏️ Gehoord — pas aan indien nodig</span>
+  <textarea id="review-input" class="textarea-field" style="min-height:80px" rows="3"></textarea>
+  <button class="btn-primary" style="margin-top:10px" onclick="bevestigAntwoord()">✅ Bevestig en volgende vraag</button>
+</div>
+```
+
+  </div>
+
+  </div><!-- /interview-screen -->
+
+  <!-- Verslag scherm -->
+
+  <div id="verslag-screen" class="hidden"></div>
 
 </div>
 
 <script>
 const FIXED_EMAIL = "svanreijmersdal@sligro.nl";
-const STEPS = ["🏢 Klant","💬 Gesprek","📋 Verslag","✅ Klaar"];
 
+// ── Vragen definitie ─────────────────────────────────────────────
+const VRAGEN = [
+  {
+    id: "nummer",
+    vraag: "Wat is het klantnummer?",
+    hint: "Spreek alleen het klantnummer in",
+    icon: "🔢"
+  },
+  {
+    id: "naam",
+    vraag: "Wat is de naam van de klant?",
+    hint: "Spreek de volledige bedrijfsnaam in",
+    icon: "🏢"
+  },
+  {
+    id: "samenvatting",
+    vraag: "Geef een korte samenvatting van je bezoek.",
+    hint: "Wat was de aanleiding en hoe verliep het gesprek?",
+    icon: "💬"
+  },
+  {
+    id: "afspraken",
+    vraag: "Welke afspraken heb je gemaakt met de klant?",
+    hint: "Noem alle concrete afspraken en acties",
+    icon: "🤝"
+  },
+  {
+    id: "score",
+    vraag: "Hoe tevreden is de klant? Geef een cijfer van 1 tot 10.",
+    hint: "Spreek alleen het cijfer in, bijvoorbeeld: zeven",
+    icon: "⭐"
+  }
+];
+
+// ── State ────────────────────────────────────────────────────────
 let S = {
-  stepIdx: 0,
-  klantNaam: "", klantNummer: "",
-  datum: new Date().toISOString().split("T")[0],
-  gesprekTekst: "", report: null, sent: false
+  vraagIdx: 0,
+  antwoorden: {},   // id -> antwoord string
+  datum: new Date().toISOString().split("T")[0]
 };
 
 let recognition = null;
-let currentPhase = null;
-let timerInterval = null;
-let seconds = 0;
-let fullTranscript = "";
 let isListening = false;
+let isSpeaking = false;
+let fullTranscript = "";
+let timerInterval = null;
+let timerSecs = 0;
+let currentVraagId = null;
 
 // ── Helpers ──────────────────────────────────────────────────────
 function $(id){ return document.getElementById(id); }
@@ -156,54 +227,132 @@ function showError(m){ $("error-text").textContent=m; $("error-banner").classLis
 function hideError(){ $("error-banner").classList.add("hidden"); }
 
 function renderStepBar(current){
-  const bar=$("stepbar"); bar.innerHTML="";
-  STEPS.forEach((s,i)=>{
-    const emoji=s.split(" ")[0], label=s.split(" ").slice(1).join(" ").toUpperCase();
-    const wrap=document.createElement("div");
-    wrap.style.cssText="display:flex;flex-direction:column;align-items:center;gap:4px";
-    wrap.innerHTML=`<div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:${i<current?14:16}px;background:${i<current?"#3DAA5C":i===current?"#fff":"#E3F5E9"};border:2.5px solid ${i<=current?"#3DAA5C":"#C8E5CC"};box-shadow:${i===current?"0 0 0 4px #D4EFD9":"none"};transition:all 0.3s">${i<current?"✓":"<span>"+emoji+"</span>"}</div><span style="font-size:9px;font-weight:${i===current?700:500};color:${i===current?"#3DAA5C":"#A8C8AC"};letter-spacing:0.5px;white-space:nowrap">${label}</span>`;
+  const bar = $("stepbar");
+  bar.innerHTML = "";
+  VRAGEN.forEach((v, i) => {
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0";
+    const done = i < current;
+    const active = i === current;
+    wrap.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;
+        background:${done?"#3DAA5C":active?"#fff":"#E3F5E9"};
+        border:2.5px solid ${done||active?"#3DAA5C":"#C8E5CC"};
+        box-shadow:${active?"0 0 0 4px #D4EFD9":"none"};
+        display:flex;align-items:center;justify-content:center;
+        font-size:${done?12:15}px;transition:all 0.3s">
+        ${done?"✓":"<span>"+v.icon+"</span>"}
+      </div>
+      <span style="font-size:8px;font-weight:${active?700:500};
+        color:${active?"#3DAA5C":"#A8C8AC"};
+        letter-spacing:0.3px;white-space:nowrap;max-width:52px;
+        text-align:center;overflow:hidden;text-overflow:ellipsis">
+        ${v.id === "nummer" ? "NR." : v.id === "naam" ? "NAAM" : v.id === "samenvatting" ? "VERSLAG" : v.id === "afspraken" ? "AFSPRAKEN" : "SCORE"}
+      </span>`;
     bar.appendChild(wrap);
-    if(i<STEPS.length-1){
-      const l=document.createElement("div");
-      l.style.cssText=`flex:1;height:2.5px;background:${i<current?"#3DAA5C":"#C8E5CC"};margin:0 5px;margin-bottom:20px;border-radius:2px`;
-      bar.appendChild(l);
+    if(i < VRAGEN.length - 1){
+      const line = document.createElement("div");
+      line.style.cssText = `flex:1;height:2.5px;background:${done?"#3DAA5C":"#C8E5CC"};margin:0 4px;margin-bottom:18px;border-radius:2px;min-width:8px`;
+      bar.appendChild(line);
     }
   });
 }
 
-function startTimer(which){
-  seconds=0; clearInterval(timerInterval);
-  timerInterval=setInterval(()=>{
-    seconds++;
-    const mm=String(Math.floor(seconds/60)).padStart(2,"0"),ss=String(seconds%60).padStart(2,"0");
-    $("timer-"+which).textContent=`${mm}:${ss}`;
-  },1000);
-}
-function stopTimer(){ clearInterval(timerInterval); }
-
-function setRecUI(which, rec){
-  const btn=$("mic-btn-"+which), dot=$("rec-dot-"+which), hint=$("mic-hint-"+which);
-  btn.className="mic-btn "+(rec?"recording":"idle");
-  btn.textContent=rec?"⏹️":"🎙️";
-  dot.classList.toggle("hidden",!rec);
-  hint.textContent=rec?"⏹ Tik om te stoppen":"🎙 Tik om te beginnen";
+function updateProgress(){
+  const pct = (S.vraagIdx / VRAGEN.length) * 100;
+  $("progress-fill").style.width = pct + "%";
+  renderStepBar(S.vraagIdx);
 }
 
-function goToKlant(){
-  $("phase-gesprek").classList.add("hidden");
-  $("phase-klant").classList.remove("hidden");
-  S.stepIdx=0; renderStepBar(0);
+// ── Text-to-Speech ────────────────────────────────────────────────
+function spreekVraag(tekst, callback){
+  if(!window.speechSynthesis){ callback && callback(); return; }
+  window.speechSynthesis.cancel();
+
+  const utt = new SpeechSynthesisUtterance(tekst);
+  utt.lang = "nl-NL";
+  utt.rate = 0.95;
+  utt.pitch = 1;
+
+  // Kies Nederlandse stem als beschikbaar
+  const stemmen = window.speechSynthesis.getVoices();
+  const nlStem = stemmen.find(v => v.lang.startsWith("nl"));
+  if(nlStem) utt.voice = nlStem;
+
+  isSpeaking = true;
+  $("mic-btn").className = "mic-btn speaking-state";
+  $("mic-btn").textContent = "🔊";
+  $("mic-hint").textContent = "Luister naar de vraag...";
+  $("speaking-indicator").classList.remove("hidden");
+  $("timer-row").classList.add("hidden");
+  $("live-tekst").classList.add("hidden");
+
+  utt.onend = function(){
+    isSpeaking = false;
+    $("speaking-indicator").classList.add("hidden");
+    $("mic-btn").className = "mic-btn idle";
+    $("mic-btn").textContent = "🎙️";
+    $("mic-hint").textContent = "🎙 Tik om te antwoorden";
+    callback && callback();
+  };
+
+  utt.onerror = function(){
+    isSpeaking = false;
+    $("speaking-indicator").classList.add("hidden");
+    $("mic-btn").className = "mic-btn idle";
+    $("mic-btn").textContent = "🎙️";
+    $("mic-hint").textContent = "🎙 Tik om te antwoorden";
+    callback && callback();
+  };
+
+  // Safari laadt stemmen asynchroon
+  if(stemmen.length === 0){
+    window.speechSynthesis.onvoiceschanged = function(){
+      const nl = window.speechSynthesis.getVoices().find(v=>v.lang.startsWith("nl"));
+      if(nl) utt.voice = nl;
+      window.speechSynthesis.speak(utt);
+    };
+  } else {
+    window.speechSynthesis.speak(utt);
+  }
 }
 
-// ── Web Speech API ────────────────────────────────────────────────
-function toggleSpeech(which){
-  if(isListening){ stopSpeech(currentPhase||which); return; }
-  startSpeech(which);
+// ── Interview flow ────────────────────────────────────────────────
+function toonVraag(idx){
+  if(idx >= VRAGEN.length){ toonVerslag(); return; }
+
+  const v = VRAGEN[idx];
+  currentVraagId = v.id;
+  S.vraagIdx = idx;
+  updateProgress();
+
+  // Reset UI
+  $("review-card").classList.add("hidden");
+  $("live-tekst").classList.add("hidden");
+  $("live-tekst").innerHTML = "";
+  $("timer-row").classList.add("hidden");
+  fullTranscript = "";
+  isListening = false;
+
+  // Toon vraag tekst
+  $("vraag-tekst").textContent = v.vraag;
+  $("vraag-hint").textContent = v.hint;
+  $("mic-hint").textContent = "Wacht even...";
+
+  // Spreek de vraag uit, daarna kan gebruiker antwoorden
+  spreekVraag(v.vraag);
 }
 
-function startSpeech(which){
+function onMicTap(){
+  if(isSpeaking) return; // wacht tot vraag klaar is
+  if(isListening){ stopLuisteren(); return; }
+  startLuisteren();
+}
+
+// ── Speech Recognition ────────────────────────────────────────────
+function startLuisteren(){
   if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
-    showError("Spraakherkenning wordt niet ondersteund in deze browser. Gebruik Safari op iPhone.");
+    showError("Spraakherkenning niet beschikbaar. Gebruik Safari op iPhone.");
     return;
   }
 
@@ -215,257 +364,201 @@ function startSpeech(which){
   recognition.maxAlternatives = 1;
 
   fullTranscript = "";
-  currentPhase = which;
   isListening = true;
 
-  const liveEl = $("live-"+which);
-  liveEl.classList.remove("hidden");
-  liveEl.innerHTML = '<span style="color:#A8C8AC;font-style:italic">Luisteren...</span>';
+  $("mic-btn").className = "mic-btn recording";
+  $("mic-btn").textContent = "⏹️";
+  $("mic-hint").textContent = "⏹ Tik om te stoppen";
+  $("timer-row").classList.remove("hidden");
+  $("live-tekst").classList.remove("hidden");
+  $("live-tekst").innerHTML = '<span style="color:#A8C8AC;font-style:italic">Luisteren...</span>';
 
-  setRecUI(which, true);
-  startTimer(which);
+  timerSecs = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    timerSecs++;
+    $("timer").textContent = String(Math.floor(timerSecs/60)).padStart(2,"0")+":"+String(timerSecs%60).padStart(2,"0");
+  }, 1000);
 
   recognition.onresult = function(e){
-    let interim = "", final = "";
+    let interim="", final="";
     for(let i=e.resultIndex;i<e.results.length;i++){
       if(e.results[i].isFinal) final += e.results[i][0].transcript+" ";
       else interim += e.results[i][0].transcript;
     }
     fullTranscript += final;
-    liveEl.innerHTML = `<span style="color:#1C2B20">${fullTranscript}</span><span style="color:#A8C8AC">${interim}</span>`;
+    $("live-tekst").innerHTML = `<span style="color:#1C2B20">${fullTranscript}</span><span style="color:#A8C8AC">${interim}</span>`;
   };
 
   recognition.onerror = function(e){
     if(e.error==="not-allowed"){
-      showError("Microfoontoestemming geweigerd. Ga in Safari naar AA → Website-instellingen → Microfoon → Toestaan.");
+      showError("Microfoon geweigerd. Ga in Safari naar AA → Website-instellingen → Microfoon → Toestaan.");
     } else if(e.error!=="no-speech"){
-      showError("Spraakherkenning fout: "+e.error);
+      showError("Fout: "+e.error);
     }
-    stopSpeech(which);
+    stopLuisteren();
   };
 
   recognition.onend = function(){
-    // Auto-restart als nog steeds aan het luisteren
-    if(isListening) recognition.start();
+    if(isListening) try{ recognition.start(); }catch(e){}
   };
 
   recognition.start();
 }
 
-function stopSpeech(which){
+function stopLuisteren(){
   isListening = false;
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition=null; }
-  stopTimer();
-  setRecUI(which, false);
+  clearInterval(timerInterval);
 
-  // Pak tekst uit het live element — betrouwbaarder dan fullTranscript
-  const liveEl = $("live-"+which);
-  const liveText = liveEl ? (liveEl.innerText || liveEl.textContent || "").replace("Luisteren...","").trim() : "";
-  const text = fullTranscript.trim() || liveText;
+  $("mic-btn").className = "mic-btn idle";
+  $("mic-btn").textContent = "🎙️";
+  $("mic-hint").textContent = "🎙 Tik om opnieuw op te nemen";
+  $("timer-row").classList.add("hidden");
 
-  if(which==="klant"){
-    extractKlantInfo(text);
-    $("input-naam").value = S.klantNaam;
-    $("input-nummer").value = S.klantNummer;
-    $("klant-manual-card").classList.remove("hidden");
-  } else {
-    $("textarea-gesprek").value = text;
-    $("gesprek-klaar-card").classList.remove("hidden");
-    // Scroll naar beneden zodat gebruiker de textarea ziet
-    setTimeout(()=>{ $("gesprek-klaar-card").scrollIntoView({behavior:"smooth", block:"start"}); }, 100);
-  }
+  // Pak tekst uit live element
+  const liveEl = $("live-tekst");
+  const tekst = fullTranscript.trim() || (liveEl ? liveEl.innerText.replace("Luisteren...","").trim() : "");
+
+  // Verwerk antwoord per vraagtype
+  let verwerkt = tekst;
+  if(currentVraagId === "nummer") verwerkt = verwerkNummer(tekst);
+  if(currentVraagId === "score") verwerkt = verwerkScore(tekst);
+
+  // Toon review
+  $("review-input").value = verwerkt;
+  $("review-card").classList.remove("hidden");
+  setTimeout(()=>$("review-card").scrollIntoView({behavior:"smooth",block:"start"}), 100);
 }
 
-function extractKlantInfo(text){
-  // Vertaal uitgesproken cijfers naar getallen
-  const cijferMap = {"nul":"0","één":"1","een":"1","twee":"2","drie":"3","vier":"4","vijf":"5",
-    "zes":"6","zeven":"7","acht":"8","negen":"9","tien":"10","elf":"11","twaalf":"12",
-    "dertien":"13","veertien":"14","vijftien":"15","zestien":"16","zeventien":"17",
-    "achttien":"18","negentien":"19","twintig":"20","dertig":"30","veertig":"40",
-    "vijftig":"50","zestig":"60","zeventig":"70","tachtig":"80","negentig":"90"};
-
-  let tekst = text.toLowerCase();
-  Object.entries(cijferMap).forEach(([w,c]) => {
-    tekst = tekst.replace(new RegExp("\\b"+w+"\\b","g"), " "+c+" ");
-  });
-
-  // Zoek nummer na keyword "klantnummer" of "nummer"
-  let nummer = "";
-  const naKeyword = tekst.match(/(?:klantnummer|nummer)\s*[:\s]\s*([\d\s]{1,20})/i);
-  if(naKeyword) nummer = naKeyword[1].replace(/\s+/g,"").slice(0,10);
-
-  // Anders: zoek aaneengesloten cijferreeks van 3+
-  if(!nummer){
-    const m = tekst.match(/\b\d[\d\s]{1,12}\d\b/);
-    if(m) nummer = m[0].replace(/\s+/g,"");
-  }
-  if(!nummer){
-    const m = tekst.match(/\b\d{3,}\b/);
-    if(m) nummer = m[0];
-  }
-
-  if(nummer) S.klantNummer = nummer;
-
-  // Naam: verwijder klantnummer, stopwoorden en cijfers
-  let naam = text
-    .replace(/klantnummer[\s\S]{0,20}/gi,"")
-    .replace(/nummer[\s:]*[\w\s]{0,15}/gi,"")
-    .replace(/\b\d+\b/g,"")
-    .replace(/\b(klant|bij|was|ik|en|wat|is|zijn|het|de|een|mijn|heb|bezocht)\b/gi,"")
-    .replace(/\s+/g," ").trim();
-
-  S.klantNaam = naam.split(" ").filter(w=>w.length>1).map(w=>w[0].toUpperCase()+w.slice(1)).join(" ");
+function verwerkNummer(tekst){
+  const cijferMap = {"nul":"0","één":"1","een":"1","twee":"2","drie":"3","vier":"4","vijf":"5","zes":"6","zeven":"7","acht":"8","negen":"9"};
+  let t = tekst.toLowerCase();
+  Object.entries(cijferMap).forEach(([w,c])=>{ t = t.replace(new RegExp("\\b"+w+"\\b","g")," "+c+" "); });
+  const m = t.match(/[\d\s]{2,15}/);
+  return m ? m[0].replace(/\s+/g,"").trim() : tekst;
 }
 
-function bevestigKlant(){
-  S.klantNaam = $("input-naam").value.trim();
-  S.klantNummer = $("input-nummer").value.trim();
-  if(!S.klantNaam){ showError("Vul een klantnaam in."); return; }
-
-  $("badge-naam").textContent = S.klantNaam;
-  $("badge-info").textContent = `Klantnr. ${S.klantNummer||"—"} · ${S.datum}`;
-  $("phase-klant").classList.add("hidden");
-  $("phase-gesprek").classList.remove("hidden");
-  $("timer-gesprek").textContent = "00:00";
-  $("live-gesprek").classList.add("hidden");
-  $("live-gesprek").innerHTML = "";
-  $("gesprek-klaar-card").classList.add("hidden");
-  S.stepIdx=1; renderStepBar(1);
+function verwerkScore(tekst){
+  const cijferMap = {"nul":"0","één":"1","een":"1","twee":"2","drie":"3","vier":"4","vijf":"5","zes":"6","zeven":"7","acht":"8","negen":"9","tien":"10"};
+  let t = tekst.toLowerCase();
+  Object.entries(cijferMap).forEach(([w,c])=>{ t = t.replace(new RegExp("\\b"+w+"\\b","g")," "+c+" "); });
+  const m = t.match(/\b([1-9]|10)\b/);
+  return m ? m[0] : tekst;
 }
 
-function maakVerslag(){
-  // Pak textarea tekst, of anders de live tekst direct
-  let tekst = $("textarea-gesprek").value.trim();
-  if(!tekst){
-    const liveEl = $("live-gesprek");
-    if(liveEl) tekst = liveEl.innerText.replace("Luisteren...", "").trim();
-  }
-  if(!tekst){ showError("Er is geen gesprektekst. Probeer opnieuw."); return; }
-  S.gesprekTekst = tekst;
+function bevestigAntwoord(){
+  const antwoord = $("review-input").value.trim();
+  if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
 
-  // Structureer het verslag lokaal op basis van de tekst
-  const rapport = structureerVerslag(tekst);
-  S.report = rapport;
-  renderReport(rapport);
-  $("phase-gesprek").classList.add("hidden");
-  $("phase-verslag").classList.remove("hidden");
-  S.stepIdx=2; renderStepBar(2);
+  S.antwoorden[currentVraagId] = antwoord;
+
+  // Naar volgende vraag
+  toonVraag(S.vraagIdx + 1);
 }
 
-function structureerVerslag(tekst){
-  // Sla de ruwe tekst op als samenvatting
-  // Probeer acties te herkennen via keywords
-  const acties = [];
-  const afspraken = [];
-  const onderwerpen = [];
+// ── Verslag ──────────────────────────────────────────────────────
+function toonVerslag(){
+  $("progress-fill").style.width = "100%";
+  renderStepBar(VRAGEN.length);
+  $("interview-screen").classList.add("hidden");
+  $("verslag-screen").classList.remove("hidden");
 
-  const zinnen = tekst.split(/[.!?]+/).map(z=>z.trim()).filter(z=>z.length>5);
+  const a = S.antwoorden;
+  const score = parseInt(a.score) || 0;
+  const scoreKleur = score >= 8 ? "#2D8045" : score >= 6 ? "#E67E22" : "#C0392B";
+  const scoreEmoji = score >= 8 ? "😊" : score >= 6 ? "😐" : "😟";
 
-  zinnen.forEach(z=>{
-    const l = z.toLowerCase();
-    if(l.includes("actie") || l.includes("zorgen voor") || l.includes("gaat") || l.includes("stuurt") || l.includes("belt") || l.includes("mailt") || l.includes("levert") || l.includes("regelt")){
-      acties.push({actie: z, deadline: ""});
-    } else if(l.includes("afgesproken") || l.includes("afspraak") || l.includes("volgende") || l.includes("bezoek") || l.includes("terugkomen")){
-      afspraken.push(z);
-    } else if(z.length > 10){
-      onderwerpen.push(z);
-    }
-  });
-
-  return {
-    samenvatting: tekst.length > 200 ? tekst.substring(0,200)+"..." : tekst,
-    volledigVerslag: tekst,
-    besprokenOnderwerpen: onderwerpen.slice(0,5),
-    afspraken: afspraken.slice(0,5),
-    acties: acties.slice(0,8),
-    followUp: afspraken.length > 0 ? afspraken[afspraken.length-1] : ""
-  };
-}
-
-function renderReport(rpt){
-  const el=$("phase-verslag");
-  const chips=(rpt.besprokenOnderwerpen||[]).map(o=>`<span class="chip">• ${o}</span>`).join(" ");
-  const afspraken=(rpt.afspraken||[]).map(a=>`<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start"><span style="color:#3DAA5C;font-weight:700;flex-shrink:0">✓</span><p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.5">${a}</p></div>`).join("");
-  const acties=(rpt.acties||[]).map((a,i,arr)=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding-bottom:${i<arr.length-1?12:0}px;margin-bottom:${i<arr.length-1?12:0}px;border-bottom:${i<arr.length-1?"1px solid #E3F5E9":"none"}"><div style="display:flex;gap:8px;flex:1"><span style="color:#3DAA5C;font-weight:700;flex-shrink:0">→</span><p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.5">${a.actie}</p></div>${a.deadline?`<span class="badge-deadline">📅 ${a.deadline}</span>`:""}</div>`).join("");
-
-  el.innerHTML=`
-    <div class="card" style="background:linear-gradient(135deg,#1F5C30,#2D8045);border:none;padding:18px 20px">
+  $("verslag-screen").innerHTML = `
+    <div class="card" style="background:linear-gradient(135deg,#1F5C30,#2D8045);border:none;padding:20px 20px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:24px">🏢</div>
         <div>
-          <p style="font-weight:800;font-size:18px;color:#fff;margin-bottom:3px">${S.klantNaam}</p>
-          <p style="font-size:13px;color:rgba(255,255,255,0.7);margin:0">Nr. ${S.klantNummer||"—"} · 📅 ${S.datum}</p>
+          <p style="font-weight:800;font-size:18px;color:#fff;margin-bottom:3px">${a.naam||"—"}</p>
+          <p style="font-size:13px;color:rgba(255,255,255,0.75);margin:0">Nr. ${a.nummer||"—"} · 📅 ${S.datum}</p>
         </div>
       </div>
     </div>
 
     <div class="card">
-      <span class="label">📝 Volledig verslag</span>
-      <p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.75;white-space:pre-wrap">${rpt.volledigVerslag}</p>
+      <span class="label">💬 Samenvatting bezoek</span>
+      <p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.75">${a.samenvatting||"—"}</p>
     </div>
 
-    ${acties?`<div class="card"><span class="label">⚡ Herkende acties</span>${acties}</div>`:""}
-    ${afspraken?`<div class="card"><span class="label">🤝 Herkende afspraken</span>${afspraken}</div>`:""}
-    ${rpt.followUp?`<div class="card" style="background:#E3F5E9"><span class="label">🔄 Follow-up</span><p style="color:#2E4A35;font-size:14px;margin:0;line-height:1.6">${rpt.followUp}</p></div>`:""}
+    <div class="card">
+      <span class="label">🤝 Gemaakte afspraken</span>
+      <p style="color:#1C2B20;font-size:14px;margin:0;line-height:1.75;white-space:pre-wrap">${a.afspraken||"—"}</p>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <span class="label">⭐ Klanttevredenheid</span>
+      <div class="score-display" style="color:${scoreKleur}">${a.score||"—"}</div>
+      <p style="color:${scoreKleur};font-size:22px;margin:0">${scoreEmoji}</p>
+      <p style="color:#6B8F72;font-size:12px;margin-top:4px">op een schaal van 1 tot 10</p>
+    </div>
 
     <div class="card">
       <span class="label">📤 Delen</span>
       <button class="btn-primary" onclick="mailVerslag()" style="margin-bottom:10px">📧 Mail verslag naar mezelf</button>
-      <button class="btn-secondary" onclick="downloadICS()">📅 Download agenda-item (.ics)</button>
-      <div style="margin-top:14px;text-align:center">
-        <button onclick="resetApp()" style="background:none;border:none;color:#6B8F72;font-size:14px;cursor:pointer;padding:8px">+ Nieuw bezoek starten</button>
-      </div>
+      <button class="btn-secondary" onclick="downloadICS()" style="margin-bottom:10px">📅 Download agenda-item (.ics)</button>
+      <button class="btn-secondary" onclick="resetApp()">+ Nieuw bezoek starten</button>
     </div>
   `;
 }
 
 function mailVerslag(){
-  const rpt = S.report;
-  const acties=(rpt.acties||[]).map(a=>`• ${a.actie}`).join("\n");
-  const afspraken=(rpt.afspraken||[]).map(a=>`• ${a}`).join("\n");
-  const subject=encodeURIComponent(`Bezoekverslag ${S.klantNaam} (${S.klantNummer}) — ${S.datum}`);
-  const body=encodeURIComponent(
-    `Bezoekverslag\n` +
-    `Klant: ${S.klantNaam} (nr. ${S.klantNummer})\n` +
-    `Datum: ${S.datum}\n\n` +
-    `Volledig verslag:\n${rpt.volledigVerslag}\n\n` +
-    `Acties:\n${acties||"—"}\n\n` +
-    `Afspraken:\n${afspraken||"—"}`
+  const a = S.antwoorden;
+  const subject = encodeURIComponent(`Bezoekverslag ${a.naam||""} (${a.nummer||""}) — ${S.datum}`);
+  const body = encodeURIComponent(
+    `BEZOEKVERSLAG\n` +
+    `==============\n` +
+    `Klant:   ${a.naam||"—"}\n` +
+    `Nummer:  ${a.nummer||"—"}\n` +
+    `Datum:   ${S.datum}\n\n` +
+    `SAMENVATTING\n${a.samenvatting||"—"}\n\n` +
+    `AFSPRAKEN\n${a.afspraken||"—"}\n\n` +
+    `KLANTTEVREDENHEID: ${a.score||"—"}/10`
   );
-  window.location.href=`mailto:${FIXED_EMAIL}?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:${FIXED_EMAIL}?subject=${subject}&body=${body}`;
 }
 
 function downloadICS(){
-  const d=S.datum.replace(/-/g,"");
-  const desc=(S.report.afspraken||[]).concat((S.report.acties||[]).map(a=>a.actie)).join("\\n");
-  const ics=["BEGIN:VCALENDAR","VERSION:2.0","BEGIN:VEVENT",
-    `SUMMARY:Bezoek ${S.klantNaam} (${S.klantNummer})`,
+  const a = S.antwoorden;
+  const d = S.datum.replace(/-/g,"");
+  const desc = `Samenvatting: ${a.samenvatting||""}\\nAfspraken: ${a.afspraken||""}\\nScore: ${a.score||""}/10`;
+  const ics = ["BEGIN:VCALENDAR","VERSION:2.0","BEGIN:VEVENT",
+    `SUMMARY:Bezoek ${a.naam||""} (${a.nummer||""})`,
     `DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${d}`,`DESCRIPTION:${desc}`,
     "END:VEVENT","END:VCALENDAR"].join("\r\n");
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
-  a.download=`bezoek-${S.klantNaam.replace(/\s+/g,"-")}-${S.datum}.ics`;
-  a.click();
+  const el = document.createElement("a");
+  el.href = URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
+  el.download = `bezoek-${(a.naam||"klant").replace(/\s+/g,"-")}-${S.datum}.ics`;
+  el.click();
 }
 
 function resetApp(){
-  S={stepIdx:0,klantNaam:"",klantNummer:"",datum:new Date().toISOString().split("T")[0],gesprekTekst:"",report:null,sent:false};
-  $("phase-verslag").classList.add("hidden");
-  $("phase-gesprek").classList.add("hidden");
-  $("phase-klant").classList.remove("hidden");
-  $("klant-manual-card").classList.add("hidden");
-  $("gesprek-klaar-card").classList.add("hidden");
-  $("live-klant").classList.add("hidden");
-  $("live-gesprek").classList.add("hidden");
-  $("timer-klant").textContent="00:00";
-  $("timer-gesprek").textContent="00:00";
-  $("phase-verslag").innerHTML="";
-  setRecUI("klant",false); setRecUI("gesprek",false);
-  hideError(); renderStepBar(0);
+  S = { vraagIdx:0, antwoorden:{}, datum:new Date().toISOString().split("T")[0] };
+  $("verslag-screen").classList.add("hidden");
+  $("verslag-screen").innerHTML = "";
+  $("interview-screen").classList.remove("hidden");
+  $("review-card").classList.add("hidden");
+  $("live-tekst").classList.add("hidden");
+  $("timer-row").classList.add("hidden");
+  hideError();
   fullTranscript=""; isListening=false;
+  $("start-screen").classList.remove("hidden");
+  $("interview-screen").classList.add("hidden");
+  renderStepBar(0);
 }
 
-// Init
+// ── Start ────────────────────────────────────────────────────────
+function startInterview(){
+  $("start-screen").classList.add("hidden");
+  $("interview-screen").classList.remove("hidden");
+  renderStepBar(0);
+  toonVraag(0);
+}
+
 renderStepBar(0);
 </script>
 
