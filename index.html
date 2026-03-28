@@ -197,7 +197,7 @@ function goToKlant(){
 
 // ── Web Speech API ────────────────────────────────────────────────
 function toggleSpeech(which){
-  if(isListening){ stopSpeech(which); return; }
+  if(isListening){ stopSpeech(currentPhase||which); return; }
   startSpeech(which);
 }
 
@@ -254,39 +254,66 @@ function startSpeech(which){
 
 function stopSpeech(which){
   isListening = false;
-  if(recognition){ try{ recognition.stop(); }catch(e){} recognition=null; }
+  if(recognition){ try{ recognition.abort(); }catch(e){} recognition=null; }
   stopTimer();
   setRecUI(which, false);
 
-  const text = fullTranscript.trim();
+  // Pak tekst uit het live element — betrouwbaarder dan fullTranscript
+  const liveEl = $("live-"+which);
+  const liveText = liveEl ? (liveEl.innerText || liveEl.textContent || "").replace("Luisteren...","").trim() : "";
+  const text = fullTranscript.trim() || liveText;
 
   if(which==="klant"){
-    // Extraheer naam en nummer uit gesproken tekst
     extractKlantInfo(text);
     $("input-naam").value = S.klantNaam;
     $("input-nummer").value = S.klantNummer;
     $("klant-manual-card").classList.remove("hidden");
   } else {
-    // Toon tekst in textarea voor review
     $("textarea-gesprek").value = text;
     $("gesprek-klaar-card").classList.remove("hidden");
+    // Scroll naar beneden zodat gebruiker de textarea ziet
+    setTimeout(()=>{ $("gesprek-klaar-card").scrollIntoView({behavior:"smooth", block:"start"}); }, 100);
   }
 }
 
 function extractKlantInfo(text){
-  // Probeer klantnummer te vinden (reeks van 4+ cijfers)
-  const numMatch = text.match(/\b\d{4,}\b/);
-  if(numMatch) S.klantNummer = numMatch[0];
+  // Vertaal uitgesproken cijfers naar getallen
+  const cijferMap = {"nul":"0","één":"1","een":"1","twee":"2","drie":"3","vier":"4","vijf":"5",
+    "zes":"6","zeven":"7","acht":"8","negen":"9","tien":"10","elf":"11","twaalf":"12",
+    "dertien":"13","veertien":"14","vijftien":"15","zestien":"16","zeventien":"17",
+    "achttien":"18","negentien":"19","twintig":"20","dertig":"30","veertig":"40",
+    "vijftig":"50","zestig":"60","zeventig":"70","tachtig":"80","negentig":"90"};
 
-  // Naam: verwijder het gevonden nummer en woorden als "klantnummer", "nummer", "klant"
+  let tekst = text.toLowerCase();
+  Object.entries(cijferMap).forEach(([w,c]) => {
+    tekst = tekst.replace(new RegExp("\\b"+w+"\\b","g"), " "+c+" ");
+  });
+
+  // Zoek nummer na keyword "klantnummer" of "nummer"
+  let nummer = "";
+  const naKeyword = tekst.match(/(?:klantnummer|nummer)\s*[:\s]\s*([\d\s]{1,20})/i);
+  if(naKeyword) nummer = naKeyword[1].replace(/\s+/g,"").slice(0,10);
+
+  // Anders: zoek aaneengesloten cijferreeks van 3+
+  if(!nummer){
+    const m = tekst.match(/\b\d[\d\s]{1,12}\d\b/);
+    if(m) nummer = m[0].replace(/\s+/g,"");
+  }
+  if(!nummer){
+    const m = tekst.match(/\b\d{3,}\b/);
+    if(m) nummer = m[0];
+  }
+
+  if(nummer) S.klantNummer = nummer;
+
+  // Naam: verwijder klantnummer, stopwoorden en cijfers
   let naam = text
-    .replace(/klantnummer[\s:]*\d+/gi,"")
-    .replace(/nummer[\s:]*\d+/gi,"")
-    .replace(/\b\d{4,}\b/g,"")
-    .replace(/\b(klant|bij|was|ik|en|wat|is|zijn|het|de|een)\b/gi,"")
+    .replace(/klantnummer[\s\S]{0,20}/gi,"")
+    .replace(/nummer[\s:]*[\w\s]{0,15}/gi,"")
+    .replace(/\b\d+\b/g,"")
+    .replace(/\b(klant|bij|was|ik|en|wat|is|zijn|het|de|een|mijn|heb|bezocht)\b/gi,"")
     .replace(/\s+/g," ").trim();
 
-  // Maak eerste letter hoofdletter per woord
   S.klantNaam = naam.split(" ").filter(w=>w.length>1).map(w=>w[0].toUpperCase()+w.slice(1)).join(" ");
 }
 
@@ -307,7 +334,12 @@ function bevestigKlant(){
 }
 
 function maakVerslag(){
-  const tekst = $("textarea-gesprek").value.trim();
+  // Pak textarea tekst, of anders de live tekst direct
+  let tekst = $("textarea-gesprek").value.trim();
+  if(!tekst){
+    const liveEl = $("live-gesprek");
+    if(liveEl) tekst = liveEl.innerText.replace("Luisteren...", "").trim();
+  }
   if(!tekst){ showError("Er is geen gesprektekst. Probeer opnieuw."); return; }
   S.gesprekTekst = tekst;
 
