@@ -288,10 +288,13 @@ function toggleLuisteren(){
   recognition.onerror = function(e){
     if(e.error === "not-allowed"){
       showError("Microfoon geweigerd. Ga in Safari naar AA → Website-instellingen → Microfoon → Toestaan.");
-    } else if(e.error !== "no-speech"){
+      stopLuisteren();
+    } else if(e.error === "aborted" || e.error === "no-speech"){
+      // Safari meldt dit bij normaal stoppen — negeren
+    } else {
       showError("Fout: " + e.error);
+      stopLuisteren();
     }
-    stopLuisteren();
   };
 
   recognition.onend = function(){
@@ -342,7 +345,12 @@ function bevestigAntwoord(){
   const antwoord = $("review-input").value.trim();
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
-  toonVraag(S.vraagIdx + 1);
+  const volgende = S.vraagIdx + 1;
+  toonVraag(volgende);
+  // Auto-start microfoon direct vanuit tap-handler (Safari vereist dit)
+  if(volgende < VRAGEN.length){
+    toggleLuisteren();
+  }
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
@@ -396,7 +404,7 @@ function toonVerslag(){
 
 function mailVerslag(){
   const a = S.antwoorden;
-  const subject = encodeURIComponent(`Bezoekverslag ${a.naam||""} (${a.nummer||""}) — ${S.datum}`);
+  const subject = encodeURIComponent(`${a.nummer||""} - ${a.naam||""} - Bezoekverslag`);
   const body = encodeURIComponent(
     `BEZOEKVERSLAG\n==============\n` +
     `Klant:  ${a.naam||"—"}\n` +
@@ -410,16 +418,58 @@ function mailVerslag(){
 }
 
 function downloadICS(){
-  const a = S.antwoorden;
-  const d = S.datum.replace(/-/g,"");
-  const desc = `Samenvatting: ${a.samenvatting||""}\\nAfspraken: ${a.afspraken||""}\\nScore: ${a.score||""}/10`;
-  const ics = ["BEGIN:VCALENDAR","VERSION:2.0","BEGIN:VEVENT",
-    `SUMMARY:Bezoek ${a.naam||""} (${a.nummer||""})`,
-    `DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${d}`,`DESCRIPTION:${desc}`,
-    "END:VEVENT","END:VCALENDAR"].join("\r\n");
-  const el = document.createElement("a");
-  el.href = URL.createObjectURL(new Blob([ics],{type:"text/calendar;charset=utf-8"}));
-  el.download = `bezoek-${(a.naam||"klant").replace(/\s+/g,"-")}-${S.datum}.ics`;
+  var a = S.antwoorden;
+  var d = S.datum.replace(/-/g,"");
+  var now = new Date().toISOString().replace(/[-:.]/g,"").substring(0,15)+"Z";
+  var uid = now + "-sligro@bezoekverslag.nl";
+  var score = a.score || "-";
+  var scoreLabel = parseInt(score) >= 8 ? "Goed" : parseInt(score) >= 6 ? "Neutraal" : "Matig";
+
+  var desc = "BEZOEKVERSLAG SLIGRO\n"
+    + "====================\n\n"
+    + "Klant:  " + (a.naam||"-") + "\n"
+    + "Nr:     " + (a.nummer||"-") + "\n"
+    + "Datum:  " + S.datum + "\n\n"
+    + "SAMENVATTING\n"
+    + "------------\n"
+    + (a.samenvatting||"-") + "\n\n"
+    + "AFSPRAKEN\n"
+    + "---------\n"
+    + (a.afspraken||"-") + "\n\n"
+    + "KLANTTEVREDENHEID\n"
+    + "-----------------\n"
+    + score + "/10 - " + scoreLabel;
+
+  var descEsc = desc.replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n");
+  var summary = (a.nummer||"") + " - " + (a.naam||"") + " - Bezoekverslag";
+  var summaryEsc = summary.replace(/;/g,"\\;").replace(/,/g,"\\,");
+  var location = (a.naam||"").replace(/;/g,"\\;");
+
+  var lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Sligro//Bezoekverslag//NL",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    "BEGIN:VEVENT",
+    "UID:" + uid,
+    "DTSTAMP:" + now,
+    "DTSTART;VALUE=DATE:" + d,
+    "DTEND;VALUE=DATE:" + d,
+    "SUMMARY:" + summaryEsc,
+    "DESCRIPTION:" + descEsc,
+    "LOCATION:" + location,
+    "STATUS:CONFIRMED",
+    "CLASS:PRIVATE",
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ];
+
+  var ics = lines.join("\r\n");
+  var filename = (a.nummer||"bezoek") + "-" + (a.naam||"klant").replace(/\s+/g,"-") + "-" + S.datum + ".ics";
+  var el = document.createElement("a");
+  el.href = URL.createObjectURL(new Blob([ics], {type:"text/calendar;charset=utf-8"}));
+  el.download = filename;
   el.click();
 }
 
