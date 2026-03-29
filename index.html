@@ -65,14 +65,14 @@
       <div style="width:28px;height:28px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div>
       <div>
         <p style="color:#1a1a1a;font-size:15px;font-weight:600;margin:0 0 2px">Tik op het deel-icoon</p>
-        <p style="color:#666;font-size:13px;margin:0">Het <strong>⎋</strong> icoon onderaan in Safari</p>
+        <p style="color:#666;font-size:13px;margin:0">Het icoon met een pijl omhoog uit een vakje — onderaan je scherm in Safari</p>
       </div>
     </div>
     <div style="display:flex;gap:14px;align-items:flex-start">
       <div style="width:28px;height:28px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div>
       <div>
-        <p style="color:#1a1a1a;font-size:15px;font-weight:600;margin:0 0 2px">Kies "Zet op beginscherm"</p>
-        <p style="color:#666;font-size:13px;margin:0">Scroll naar beneden in het menu</p>
+        <p style="color:#1a1a1a;font-size:15px;font-weight:600;margin:0 0 2px">Tik op "Toon meer" en dan "Zet op beginscherm"</p>
+        <p style="color:#666;font-size:13px;margin:0">Scroll naar beneden in het menu als je het niet ziet</p>
       </div>
     </div>
     <div style="display:flex;gap:14px;align-items:flex-start">
@@ -223,7 +223,7 @@
 </div>
 
 <script>
-const FIXED_EMAIL = "svanreijmersdal@sligro.nl";
+// E-mail wordt opgeslagen in localStorage
 
 const VRAGEN = [
   {
@@ -456,6 +456,11 @@ function toonVerslag(){
   $("progress-fill").style.width = "100%";
   $("interview-screen").classList.add("hidden");
   $("verslag-screen").classList.remove("hidden");
+  // Laad opgeslagen e-mail na renderen
+  setTimeout(function(){
+    var opgeslagen = localStorage.getItem("sligro_email");
+    if(opgeslagen && $("email-input")) $("email-input").value = opgeslagen;
+  }, 50);
 
   const a = S.antwoorden;
   const score = parseInt(a.score) || 0;
@@ -492,6 +497,12 @@ function toonVerslag(){
 
     <div class="card">
       <span class="label">📤 Delen</span>
+      <div style="margin-bottom:12px">
+        <label style="color:#2d5c1e;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:6px">Jouw e-mailadres</label>
+        <input id="email-input" type="email" inputmode="email" autocapitalize="none" autocomplete="email"
+          placeholder="naam@sligro.nl"
+          style="width:100%;padding:12px 14px;background:#fff;border:1.5px solid #ccc;border-radius:4px;color:#1a1a1a;font-size:15px;outline:none;-webkit-appearance:none">
+      </div>
       <button class="btn-primary" onclick="mailVerslag()" style="margin-bottom:10px">📧 Mail verslag naar mezelf</button>
       <button class="btn-secondary" onclick="downloadICS()" style="margin-bottom:10px">📅 Download agenda-item (.ics)</button>
       <button class="btn-secondary" onclick="resetApp()">+ Nieuw bezoek starten</button>
@@ -511,7 +522,7 @@ function mailVerslag(){
     `AFSPRAKEN\n${a.afspraken||"—"}\n\n` +
     `KLANTTEVREDENHEID: ${a.score||"—"}/10`
   );
-  window.location.href = `mailto:${FIXED_EMAIL}?subject=${subject}&body=${body}`;
+  window.location.href = "mailto:" + email + "?subject=" + subject + "&body=" + body;
 }
 
 function downloadICS(){
