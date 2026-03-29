@@ -286,16 +286,9 @@ function renderStepBar(current){
 function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
-  // Start + stop direct voor toestemming — Safari vereist dit vanuit tap
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(SR){
-    var dummy = new SR();
-    dummy.onstart = function(){ dummy.abort(); };
-    dummy.onerror = function(){};
-    dummy.onend = function(){};
-    dummy.start();
-  }
-  toonVraag(0); // spreekTekst -> onend -> toggleLuisteren
+  toonVraag(0);
+  // Start opname binnen 500ms van tap — Safari staat dit toe
+  setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 500);
 }
 
 function spreekTekst(tekst){
@@ -305,10 +298,6 @@ function spreekTekst(tekst){
   utt.lang = "nl-NL";
   utt.rate = 0.92;
   utt.volume = 1.0;
-  utt.onend = function(){
-    // Spraak klaar — start opname (werkt want toestemming al verleend via tap)
-    if(!isListening) toggleLuisteren();
-  };
   window.speechSynthesis.speak(utt);
 }
 
@@ -435,16 +424,11 @@ function bevestigAntwoord(){
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   var volgende = S.vraagIdx + 1;
-  // Dummy start vanuit tap voor toestemming behouden
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(SR && volgende < VRAGEN.length){
-    var dummy = new SR();
-    dummy.onstart = function(){ dummy.abort(); };
-    dummy.onerror = function(){};
-    dummy.onend = function(){};
-    dummy.start();
+  toonVraag(volgende);
+  // Start opname binnen 500ms van tap — Safari staat dit toe
+  if(volgende < VRAGEN.length){
+    setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 500);
   }
-  toonVraag(volgende); // spreekTekst -> onend -> toggleLuisteren
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
