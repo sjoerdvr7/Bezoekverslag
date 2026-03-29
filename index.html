@@ -287,18 +287,7 @@ function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
   toonVraag(0);
-  // Vraag microfoon toestemming direct vanuit tap (Safari vereist dit)
-  // Daarna werkt auto-start via setTimeout ook voor alle volgende vragen
-  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var test = new SR();
-    test.onstart = function(){ test.abort(); };
-    test.onerror = function(){};
-    test.onend = function(){};
-    try { test.start(); } catch(e){}
-    // Nu toestemming is aangevraagd, start opname na 2 sec
-    setTimeout(function(){ if(!isListening) startRecognition(); }, 2000);
-  }
+  startRecognition();
 }
 
 function spreekTekst(tekst){
@@ -436,9 +425,8 @@ function bevestigAntwoord(){
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   toonVraag(S.vraagIdx + 1);
-  // Start opname na 3 seconden — spraak is dan klaar
   if(S.vraagIdx < VRAGEN.length){
-    setTimeout(function(){ if(!isListening) startRecognition(); }, 2000);
+    startRecognition();
   }
 }
 
