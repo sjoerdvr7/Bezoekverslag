@@ -287,7 +287,7 @@ function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
   toonVraag(0);
-  startRecognition(); // Direct vanuit tap — werkt in Safari
+  toggleLuisteren();
 }
 
 function spreekTekst(tekst){
@@ -424,7 +424,7 @@ function bevestigAntwoord(){
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   var volgende = S.vraagIdx + 1;
   toonVraag(volgende);
-  if(volgende < VRAGEN.length) startRecognition(); // Direct vanuit tap
+  if(volgende < VRAGEN.length) toggleLuisteren();
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
