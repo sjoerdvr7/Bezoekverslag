@@ -287,9 +287,16 @@ function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
   toonVraag(0);
-  // Start spraak EN opname direct vanuit tap — Safari staat dit toe
-  // Opname pikt niets op van spraak want spraak gaat via speaker, mic luistert naar gebruiker
+  // Vraag microfoon toestemming direct vanuit tap (Safari vereist dit)
+  // Daarna werkt auto-start via setTimeout ook voor alle volgende vragen
   if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var test = new SR();
+    test.onstart = function(){ test.abort(); };
+    test.onerror = function(){};
+    test.onend = function(){};
+    try { test.start(); } catch(e){}
+    // Nu toestemming is aangevraagd, start opname na 2 sec
     setTimeout(function(){ if(!isListening) startRecognition(); }, 2000);
   }
 }
