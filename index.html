@@ -493,6 +493,9 @@ function toonVerslag(){
 }
 
 function mailVerslag(){
+  var email = $("email-input").value.trim();
+  if(!email){ showError("Vul eerst je e-mailadres in."); return; }
+  localStorage.setItem("sligro_email", email);
   const a = S.antwoorden;
   const subject = encodeURIComponent(`${a.nummer||""} - ${a.naam||""} - Bezoekverslag`);
   const body = encodeURIComponent(
