@@ -233,7 +233,17 @@ function renderStepBar(current){
 function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
-  toonVraag(0);
+  toonVraag(0); // toonVraag roept spreekTekst aan — werkt hier want vanuit tap
+}
+
+function spreekTekst(tekst){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var utt = new SpeechSynthesisUtterance(tekst);
+  utt.lang = "nl-NL";
+  utt.rate = 0.92;
+  utt.volume = 1.0;
+  window.speechSynthesis.speak(utt);
 }
 
 function toonVraag(idx){
@@ -244,6 +254,8 @@ function toonVraag(idx){
 
   $("vraag-tekst").textContent = v.vraag;
   $("vraag-hint").textContent = v.hint;
+  // Spreek de vraag uit — werkt alleen als toonVraag vanuit een tap wordt aangeroepen
+  spreekTekst(v.vraag);
   $("review-card").classList.add("hidden");
   $("live-box").classList.add("hidden");
   $("live-box").innerHTML = "";
@@ -498,6 +510,7 @@ function resetApp(){
 }
 
 renderStepBar(0);
+
 </script>
 
 </body>
