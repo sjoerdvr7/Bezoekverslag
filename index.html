@@ -287,8 +287,11 @@ function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
   toonVraag(0);
-  // Start microfoon 5 seconden na de tap
-  setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 5000);
+  // Start spraak EN opname direct vanuit tap — Safari staat dit toe
+  // Opname pikt niets op van spraak want spraak gaat via speaker, mic luistert naar gebruiker
+  if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+    setTimeout(function(){ startRecognition(); }, 3000);
+  }
 }
 
 function spreekTekst(tekst){
@@ -426,9 +429,9 @@ function bevestigAntwoord(){
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   toonVraag(S.vraagIdx + 1);
-  // Start microfoon 5 seconden na de tap — genoeg tijd voor spraak
+  // Start opname na 3 seconden — spraak is dan klaar
   if(S.vraagIdx < VRAGEN.length){
-    setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 5000);
+    setTimeout(function(){ if(!isListening) startRecognition(); }, 3000);
   }
 }
 
