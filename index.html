@@ -85,8 +85,8 @@
     <div style="display:flex;gap:14px;align-items:flex-start">
       <div style="width:28px;height:28px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">4</div>
       <div>
-        <p style="color:#1a1a1a;font-size:15px;font-weight:600;margin:0 0 2px">Open via je beginscherm</p>
-        <p style="color:#666;font-size:13px;margin:0">Tik op het Sligro-icoontje op je beginscherm</p>
+        <p style="color:#1a1a1a;font-size:15px;font-weight:600;margin:0 0 2px">Open nu je nieuwe app!</p>
+        <p style="color:#666;font-size:13px;margin:0">Tik op het nieuwe icoontje tussen je apps</p>
       </div>
     </div>
     <div style="display:flex;gap:14px;align-items:flex-start">
@@ -581,6 +581,13 @@ function resetApp(){
 }
 
 renderStepBar(0);
+
+// Toon installatie als NIET via beginscherm geopend
+if(window.navigator.standalone !== true){
+  document.getElementById("installatie-screen").classList.remove("hidden");
+  document.getElementById("app-header").classList.add("hidden");
+  document.getElementById("app-main").classList.add("hidden");
+}
 
 </script>
 
