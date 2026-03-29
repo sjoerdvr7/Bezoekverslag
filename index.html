@@ -286,8 +286,8 @@ function renderStepBar(current){
 function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
-  toonVraag(0);
-  startRecognition();
+  toonVraag(0); // reset isListening = false
+  startRecognition(); // start direct daarna
 }
 
 function spreekTekst(tekst){
@@ -316,9 +316,13 @@ function toonVraag(idx){
   $("mic-btn").className = "mic-btn idle";
   $("mic-btn").textContent = "🎙️";
   $("mic-hint").textContent = "🎙 Tik om te beginnen";
+  // Stop eventuele lopende opname
+  if(isListening){
+    try{ recognition && recognition.abort(); }catch(e){}
+    clearInterval(timerInterval);
+  }
   fullTranscript = "";
   isListening = false;
-  clearInterval(timerInterval);
 }
 
 // ── Opname ───────────────────────────────────────────────────────
@@ -425,6 +429,7 @@ function bevestigAntwoord(){
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   toonVraag(S.vraagIdx + 1);
+  // toonVraag heeft isListening = false gezet, nu direct starten
   if(S.vraagIdx < VRAGEN.length){
     startRecognition();
   }
