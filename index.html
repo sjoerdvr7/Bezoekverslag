@@ -10,42 +10,45 @@
   <title>Sligro Bezoekverslag</title>
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
-    body{background:#ebebeb;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;color:#1a1a1a}
+    body{background:#f2f2f2;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;color:#1a1a1a}
     button,input,textarea{font-family:inherit}
     @keyframes mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.4),0 0 0 6px rgba(192,57,43,0.1)}50%{box-shadow:0 0 0 12px rgba(192,57,43,0.2),0 0 0 24px rgba(192,57,43,0.05)}}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:0.1}}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-    .card{background:#ffffff;border-radius:4px;padding:20px;margin-bottom:12px;box-shadow:0 1px 6px rgba(0,0,0,0.1);animation:fadeIn 0.3s ease}
-    .label{color:#2d5c1e;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block}
-    .btn-primary{padding:14px 20px;border-radius:4px;width:100%;border:none;background:#2d5c1e;color:#fff;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;display:block;letter-spacing:0.3px}
-    .btn-primary:active{background:#1e3d14}
-    .btn-secondary{padding:12px 20px;border-radius:4px;width:100%;background:#fff;border:2px solid #2d5c1e;color:#2d5c1e;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .card{background:#fff;border-radius:6px;padding:20px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);animation:fadeIn 0.25s ease}
+    .label{color:#3a7a2a;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:block}
+    .btn-primary{padding:14px 20px;border-radius:6px;width:100%;border:none;background:#3a7a2a;color:#fff;font-size:15px;font-weight:700;cursor:pointer;touch-action:manipulation;display:block}
+    .btn-primary:active{background:#2d5c1e}
+    .btn-secondary{padding:12px 20px;border-radius:6px;width:100%;background:#fff;border:1.5px solid #ccc;color:#1a1a1a;font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation;display:block}
     .mic-btn{width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;font-size:32px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;user-select:none;transition:all 0.2s}
-    .mic-btn.idle{background:#2d5c1e;box-shadow:0 4px 16px rgba(45,92,30,0.35)}
-    .mic-btn.recording{background:#c0392b;box-shadow:0 4px 16px rgba(192,57,43,0.4);animation:mic-pulse 1.8s ease-in-out infinite}
+    .mic-btn.idle{background:#3a7a2a;box-shadow:0 4px 12px rgba(58,122,42,0.3)}
+    .mic-btn.recording{background:#c0392b;box-shadow:0 4px 12px rgba(192,57,43,0.35);animation:mic-pulse 1.8s ease-in-out infinite}
     .rec-dot{width:8px;height:8px;border-radius:50%;background:#c0392b;animation:blink 1s ease-in-out infinite;flex-shrink:0}
     .hidden{display:none!important}
-    .live-box{background:#fff;border:1.5px solid #d0d0cc;border-radius:4px;padding:14px;min-height:80px;font-size:15px;color:#1a1a1a;line-height:1.7;margin-top:14px;width:100%;word-break:break-word;text-align:left}
-    .textarea-field{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #d0d0cc;border-radius:4px;color:#1a1a1a;font-size:15px;outline:none;-webkit-appearance:none;resize:vertical;line-height:1.6}
-    .textarea-field:focus{border-color:#2d5c1e}
-    .progress-bar{height:3px;background:#e0e0dc;margin-bottom:20px;overflow:hidden}
-    .progress-fill{height:100%;background:#2d5c1e;transition:width 0.4s ease}
-    .score-big{font-size:72px;font-weight:900;text-align:center;margin:8px 0;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
-    .step-row{display:flex;align-items:flex-start;margin-bottom:10px;padding:0 2px}
-    .divider{height:1px;background:#e8e8e4;margin:0 0 12px}
+    .live-box{background:#f8f8f8;border:1px solid #ddd;border-radius:6px;padding:14px;min-height:80px;font-size:15px;color:#1a1a1a;line-height:1.7;margin-top:14px;width:100%;word-break:break-word;text-align:left}
+    .textarea-field{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #ddd;border-radius:6px;color:#1a1a1a;font-size:15px;outline:none;-webkit-appearance:none;resize:vertical;line-height:1.6}
+    .textarea-field:focus{border-color:#3a7a2a}
+    .input-field{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #ddd;border-radius:6px;color:#1a1a1a;font-size:15px;outline:none;-webkit-appearance:none}
+    .input-field:focus{border-color:#3a7a2a}
+    .progress-bar{height:3px;background:#ddd;margin-bottom:20px;overflow:hidden}
+    .progress-fill{height:100%;background:#3a7a2a;transition:width 0.4s ease}
+    .score-big{font-size:72px;font-weight:900;text-align:center;margin:8px 0}
+    .nav-item{background:#fff;border-radius:0;padding:15px 16px;margin-bottom:0;display:flex;align-items:center;gap:14px;border-bottom:1px solid #f0f0f0;cursor:pointer}
   </style>
 </head>
 <body>
 
 <!-- INSTALLATIE SCHERM -->
 
-<div id="installatie-screen" class="hidden" style="min-height:100vh;background:#ebebeb">
-  <div style="background:#2d5c1e;padding:0 16px">
-    <div style="max-width:520px;margin:0 auto;padding:14px 0;display:flex;align-items:center;gap:12px">
-      <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center">
-        <svg viewBox="0 0 100 100" width="34" height="34"><circle cx="50" cy="50" r="48" fill="#2d5c1e"/><text x="50" y="62" text-anchor="middle" font-size="52" font-weight="900" font-family="Arial" fill="#fff">S</text></svg>
+<div id="installatie-screen" class="hidden" style="min-height:100vh;background:#f2f2f2">
+  <div style="background:#fff;padding:0 16px;border-bottom:2px solid #e8e8e8">
+    <div style="max-width:520px;margin:0 auto;padding:13px 0;display:flex;align-items:center;gap:12px">
+      <div style="width:36px;height:36px;border-radius:50%;background:#3a7a2a;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="48" fill="#3a7a2a"/><text x="50" y="62" text-anchor="middle" font-size="52" font-weight="900" font-family="Arial" fill="#fff">S</text></svg>
       </div>
-      <span style="color:#fff;font-weight:800;font-size:17px">Sligro</span>
+      <span style="color:#1a1a1a;font-weight:900;font-size:18px;letter-spacing:-0.3px">Sligro</span>
+      <span style="color:#ccc;font-size:14px;margin:0 2px">|</span>
+      <span style="color:#444;font-size:14px;font-weight:500">Bezoekverslag</span>
     </div>
   </div>
 
@@ -110,19 +113,14 @@
 
 <!-- HEADER -->
 
-<div id="app-header" style="background:#2d5c1e;padding:0 16px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.2)">
-  <div style="max-width:520px;margin:0 auto;padding:12px 0;display:flex;align-items:center;justify-content:space-between">
-    <div style="display:flex;align-items:center;gap:10px">
-      <!-- Sligro logo cirkel -->
-      <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden">
-        <svg viewBox="0 0 100 100" width="34" height="34">
-          <circle cx="50" cy="50" r="48" fill="#2d5c1e"/>
-          <text x="50" y="58" text-anchor="middle" font-size="28" font-weight="900" font-family="Arial" fill="#fff">S</text>
-        </svg>
-      </div>
-      <span style="color:#fff;font-weight:800;font-size:17px;letter-spacing:0.5px">Sligro</span>
+<div id="app-header" style="background:#fff;padding:0 16px;position:sticky;top:0;z-index:10;border-bottom:2px solid #e8e8e8">
+  <div style="max-width:520px;margin:0 auto;padding:13px 0;display:flex;align-items:center;gap:12px">
+    <div style="width:36px;height:36px;border-radius:50%;background:#3a7a2a;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg viewBox="0 0 100 100" width="28" height="28"><circle cx="50" cy="50" r="48" fill="#3a7a2a"/><text x="50" y="62" text-anchor="middle" font-size="52" font-weight="900" font-family="Arial" fill="#fff">S</text></svg>
     </div>
-    <span style="color:rgba(255,255,255,0.75);font-size:12px;font-weight:500">Bezoekverslag</span>
+    <span style="color:#1a1a1a;font-weight:900;font-size:18px;letter-spacing:-0.3px">Sligro</span>
+    <span style="color:#ccc;font-size:14px;margin:0 2px">|</span>
+    <span style="color:#444;font-size:14px;font-weight:500">Bezoekverslag</span>
   </div>
 </div>
 
@@ -142,38 +140,22 @@
 
   <!-- STARTSCHERM -->
 
-  <div id="start-screen" class="card" style="padding:40px 24px;text-align:center">
-    <div style="margin-bottom:20px;display:flex;justify-content:center">
-      <div style="width:72px;height:72px;border-radius:50%;background:#2d5c1e;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(45,92,30,0.25)">
-        <svg viewBox="0 0 100 100" width="60" height="60">
-          <circle cx="50" cy="50" r="48" fill="#2d5c1e"/>
-          <text x="50" y="62" text-anchor="middle" font-size="52" font-weight="900" font-family="Arial" fill="#fff">S</text>
-        </svg>
+  <div id="start-screen" class="card" style="padding:28px 20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #f0f0f0">
+      <div style="width:48px;height:48px;border-radius:50%;background:#3a7a2a;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" width="38" height="38"><circle cx="50" cy="50" r="48" fill="#3a7a2a"/><text x="50" y="62" text-anchor="middle" font-size="52" font-weight="900" font-family="Arial" fill="#fff">S</text></svg>
+      </div>
+      <div>
+        <h2 style="color:#1a1a1a;font-size:20px;font-weight:900;margin:0 0 2px;letter-spacing:-0.3px">Bezoekverslag</h2>
+        <p style="color:#888;font-size:13px;margin:0">Sligro Food Group</p>
       </div>
     </div>
-    <p style="color:#2d5c1e;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Sligro Food Group</p>
-    <h2 style="color:#1a1a1a;font-size:22px;font-weight:800;margin-bottom:28px">Leg je bezoek nu vast!</h2>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:32px">
-      <div style="display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:4px;padding:12px 16px;border-left:3px solid #2d5c1e;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-        <span style="width:26px;height:26px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
-        <span style="color:#1a1a1a;font-size:15px;font-weight:600">🔢 Klantnummer</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:4px;padding:12px 16px;border-left:3px solid #2d5c1e;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-        <span style="width:26px;height:26px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span>
-        <span style="color:#1a1a1a;font-size:15px;font-weight:600">🏢 Klantnaam</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:4px;padding:12px 16px;border-left:3px solid #2d5c1e;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-        <span style="width:26px;height:26px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</span>
-        <span style="color:#1a1a1a;font-size:15px;font-weight:600">💬 Samenvatting bezoek</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:4px;padding:12px 16px;border-left:3px solid #2d5c1e;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-        <span style="width:26px;height:26px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</span>
-        <span style="color:#1a1a1a;font-size:15px;font-weight:600">🤝 Gemaakte afspraken</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px;background:#ffffff;border-radius:4px;padding:12px 16px;border-left:3px solid #2d5c1e;box-shadow:0 1px 3px rgba(0,0,0,0.06)">
-        <span style="width:26px;height:26px;border-radius:50%;background:#2d5c1e;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</span>
-        <span style="color:#1a1a1a;font-size:15px;font-weight:600">⭐ Tevredenheidscijfer</span>
-      </div>
+    <div style="border:1px solid #e8e8e8;border-radius:6px;overflow:hidden;margin-bottom:20px">
+      <div class="nav-item"><span style="font-size:20px">🔢</span><p style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0">Klantnummer</p><span style="margin-left:auto;color:#bbb;font-size:20px">›</span></div>
+      <div class="nav-item"><span style="font-size:20px">🏢</span><p style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0">Klantnaam</p><span style="margin-left:auto;color:#bbb;font-size:20px">›</span></div>
+      <div class="nav-item"><span style="font-size:20px">💬</span><p style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0">Samenvatting bezoek</p><span style="margin-left:auto;color:#bbb;font-size:20px">›</span></div>
+      <div class="nav-item"><span style="font-size:20px">🤝</span><p style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0">Gemaakte afspraken</p><span style="margin-left:auto;color:#bbb;font-size:20px">›</span></div>
+      <div class="nav-item" style="border-bottom:none"><span style="font-size:20px">⭐</span><p style="font-size:15px;font-weight:600;color:#1a1a1a;margin:0">Tevredenheidscijfer</p><span style="margin-left:auto;color:#bbb;font-size:20px">›</span></div>
     </div>
     <button class="btn-primary" onclick="startInterview()">🎙️ Leg je klantbezoek nu vast!</button>
   </div>
@@ -185,7 +167,7 @@
 
 ```
   <!-- Vraag -->
-  <div id="vraag-bubble" style="background:#fff;border-left:4px solid #2d5c1e;border-radius:0 4px 4px 0;padding:16px 18px;margin-bottom:24px">
+  <div id="vraag-bubble" style="background:#f8f8f8;border-left:4px solid #3a7a2a;border-radius:0 4px 4px 0;padding:16px 18px;margin-bottom:24px">
     <p id="vraag-tekst" style="font-size:17px;font-weight:700;color:#1a1a1a;line-height:1.4;margin-bottom:6px"></p>
     <p id="vraag-hint" style="font-size:13px;color:#666;line-height:1.5;margin:0"></p>
   </div>
@@ -283,17 +265,17 @@ function renderStepBar(current){
     wrap.style.cssText = "display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0";
     wrap.innerHTML = `
       <div style="width:32px;height:32px;border-radius:50%;
-        background:${done?"#2d5c1e":active?"#fff":"#f0f0ec"};
-        border:2.5px solid ${done||active?"#2d5c1e":"#ccc"};
+        background:${done?"#3a7a2a":active?"#fff":"#f0f0ec"};
+        border:2.5px solid ${done||active?"#3a7a2a":"#ccc"};
         box-shadow:${active?"0 0 0 4px rgba(45,92,30,0.2)":"none"};
         display:flex;align-items:center;justify-content:center;font-size:${done?12:15}px">
         ${done?"✓":"<span>"+v.icon+"</span>"}
       </div>
-      <span style="font-size:8px;font-weight:${active?700:500};color:${active?"#2d5c1e":"#999"};white-space:nowrap">${v.label}</span>`;
+      <span style="font-size:8px;font-weight:${active?700:500};color:${active?"#3a7a2a":"#999"};white-space:nowrap">${v.label}</span>`;
     bar.appendChild(wrap);
     if(i < VRAGEN.length - 1){
       const line = document.createElement("div");
-      line.style.cssText = `flex:1;height:2.5px;background:${done?"#2d5c1e":"#ccc"};margin:0 4px;margin-bottom:18px;border-radius:1px;min-width:6px`;
+      line.style.cssText = `flex:1;height:2.5px;background:${done?"#3a7a2a":"#ddd"};margin:0 4px;margin-bottom:18px;border-radius:1px;min-width:6px`;
       bar.appendChild(line);
     }
   });
@@ -468,7 +450,7 @@ function toonVerslag(){
   const scoreEmoji = score >= 8 ? "😊" : score >= 6 ? "😐" : "😟";
 
   $("verslag-screen").innerHTML = `
-    <div class="card" style="background:#2d5c1e;border:none;padding:20px;border-radius:4px">
+    <div class="card" style="background:#3a7a2a;border:none;padding:20px;border-radius:6px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:24px">🏢</div>
         <div>
