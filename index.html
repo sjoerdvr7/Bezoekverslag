@@ -287,8 +287,16 @@ function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
   toonVraag(0);
-  // Start opname binnen 500ms van tap — Safari staat dit toe
-  setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 500);
+  // Eerste vraag: wacht tot spraak klaar is via speechSynthesis boundary
+  // Controleer elke 200ms of spraak klaar is, start dan opname
+  var wacht = setInterval(function(){
+    if(!window.speechSynthesis.speaking){
+      clearInterval(wacht);
+      if(!isListening) toggleLuisteren();
+    }
+  }, 200);
+  // Veiligheidsnet: start altijd na 4 seconden
+  setTimeout(function(){ if(!isListening){ clearInterval(wacht); toggleLuisteren(); } }, 4000);
 }
 
 function spreekTekst(tekst){
