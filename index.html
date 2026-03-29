@@ -290,7 +290,7 @@ function startInterview(){
   // Start spraak EN opname direct vanuit tap — Safari staat dit toe
   // Opname pikt niets op van spraak want spraak gaat via speaker, mic luistert naar gebruiker
   if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
-    setTimeout(function(){ startRecognition(); }, 3000);
+    setTimeout(function(){ if(!isListening) startRecognition(); }, 2000);
   }
 }
 
@@ -431,7 +431,7 @@ function bevestigAntwoord(){
   toonVraag(S.vraagIdx + 1);
   // Start opname na 3 seconden — spraak is dan klaar
   if(S.vraagIdx < VRAGEN.length){
-    setTimeout(function(){ if(!isListening) startRecognition(); }, 3000);
+    setTimeout(function(){ if(!isListening) startRecognition(); }, 2000);
   }
 }
 
