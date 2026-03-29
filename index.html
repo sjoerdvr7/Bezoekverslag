@@ -290,13 +290,20 @@ function startInterview(){
 }
 
 function spreekTekst(tekst){
-  if(!window.speechSynthesis) return;
+  if(!window.speechSynthesis){ startLuisteren(); return; }
   window.speechSynthesis.cancel();
   var utt = new SpeechSynthesisUtterance(tekst);
   utt.lang = "nl-NL";
   utt.rate = 0.92;
   utt.volume = 1.0;
+  utt.onend = function(){ startLuisteren(); };
+  utt.onerror = function(){ startLuisteren(); };
   window.speechSynthesis.speak(utt);
+}
+
+function startLuisteren(){
+  if(isListening) return;
+  toggleLuisteren();
 }
 
 function toonVraag(idx){
@@ -424,12 +431,8 @@ function bevestigAntwoord(){
   const antwoord = $("review-input").value.trim();
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
-  const volgende = S.vraagIdx + 1;
-  toonVraag(volgende);
-  // Auto-start microfoon direct vanuit tap-handler (Safari vereist dit)
-  if(volgende < VRAGEN.length){
-    toggleLuisteren();
-  }
+  toonVraag(S.vraagIdx + 1);
+  // Microfoon start automatisch via spreekTekst onend
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
