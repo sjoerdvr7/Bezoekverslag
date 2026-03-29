@@ -286,24 +286,19 @@ function renderStepBar(current){
 function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
-  toonVraag(0); // toonVraag roept spreekTekst aan — werkt hier want vanuit tap
+  toonVraag(0);
+  // Start microfoon 5 seconden na de tap
+  setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 5000);
 }
 
 function spreekTekst(tekst){
-  if(!window.speechSynthesis){ startLuisteren(); return; }
+  if(!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   var utt = new SpeechSynthesisUtterance(tekst);
   utt.lang = "nl-NL";
   utt.rate = 0.92;
   utt.volume = 1.0;
-  utt.onend = function(){ startLuisteren(); };
-  utt.onerror = function(){ startLuisteren(); };
   window.speechSynthesis.speak(utt);
-}
-
-function startLuisteren(){
-  if(isListening) return;
-  toggleLuisteren();
 }
 
 function toonVraag(idx){
@@ -314,7 +309,6 @@ function toonVraag(idx){
 
   $("vraag-tekst").textContent = v.vraag;
   $("vraag-hint").textContent = v.hint;
-  // Spreek de vraag uit — werkt alleen als toonVraag vanuit een tap wordt aangeroepen
   spreekTekst(v.vraag);
   $("review-card").classList.add("hidden");
   $("live-box").classList.add("hidden");
@@ -432,7 +426,10 @@ function bevestigAntwoord(){
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   toonVraag(S.vraagIdx + 1);
-  // Microfoon start automatisch via spreekTekst onend
+  // Start microfoon 5 seconden na de tap — genoeg tijd voor spraak
+  if(S.vraagIdx < VRAGEN.length){
+    setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 5000);
+  }
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
