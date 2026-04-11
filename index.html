@@ -507,15 +507,15 @@ let stemDetectieModus = null; // "start" | "hervat" | null
 
 function wachtOpSpreekEnStart(){
   $("mic-hint").textContent = "🎙 Spreek om automatisch te starten...";
-  // Wacht tot TTS klaar is
   const wachtTTS = setInterval(()=>{
     if(!window.speechSynthesis.speaking){
       clearInterval(wachtTTS);
       stemDetectieModus = "start";
-      ensureStemDetectie();
+      if(analyser) _startAnalyseLoop();
+      else ensureStemDetectie();
     }
   }, 100);
-  setTimeout(()=>{ clearInterval(wachtTTS); if(!isListening){ stemDetectieModus = "start"; ensureStemDetectie(); } }, 5000);
+  setTimeout(()=>{ clearInterval(wachtTTS); if(!isListening){ stemDetectieModus = "start"; if(analyser) _startAnalyseLoop(); else ensureStemDetectie(); } }, 5000);
 }
 
 function ensureStemDetectie(){
@@ -622,6 +622,7 @@ function gaNaarVraag(idx){
   const huidig = $("review-input").value.trim();
   if(huidig) S.antwoorden[VRAGEN[S.vraagIdx].id] = huidig;
   toonVraag(idx);
+  wachtOpSpreekEnStart();
 }
 
 function verwerkNummer(tekst){
