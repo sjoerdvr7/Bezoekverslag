@@ -399,6 +399,7 @@ function toggleLuisteren(){
   $("timer-row").classList.remove("hidden");
   $("live-box").classList.remove("hidden");
   if(!fullTranscript) $("live-box").innerHTML = "<span style='color:#A8C8AC;font-style:italic'>Luisteren...</span>";
+  else $("live-box").innerHTML = "<span style='color:#1C2B20'>" + fullTranscript + "</span>";
 
   requestWakeLock();
   clearInterval(timerInterval);
@@ -468,6 +469,10 @@ function stopLuisteren(){
 
 function pauzeeLuisteren(){
   if(!isListening) return;
+  // Flush: sla alles wat zichtbaar is in live-box op in fullTranscript
+  const liveEl = $("live-box");
+  const zichtbaar = liveEl ? liveEl.innerText.replace("Luisteren...","").trim() : "";
+  if(zichtbaar) fullTranscript = zichtbaar + " ";
   isPaused = true;
   isListening = false;
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
