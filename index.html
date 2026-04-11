@@ -205,14 +205,14 @@
   <span class="label">✏️ Controleer of pas aan</span>
   <textarea id="review-input" class="textarea-field" style="min-height:80px" rows="3"></textarea>
   <div style="display:flex;gap:10px;margin-top:10px">
-    <button class="nav-btn" onclick="gaNaarVraag(S.vraagIdx - 1)">◀ Vorige</button>
+    <button id="review-vorige-btn" class="nav-btn" onclick="gaNaarVraag(S.vraagIdx - 1)">◀ Vorige</button>
     <button class="nav-btn primary" onclick="bevestigAntwoord()">Volgende ▶</button>
   </div>
 </div>
 
 <!-- Navigatie zonder invoer -->
 <div id="nav-card" class="card" style="display:flex;gap:10px">
-  <button class="nav-btn" onclick="gaNaarVraag(S.vraagIdx - 1)">◀ Vorige</button>
+  <button id="nav-vorige-btn" class="nav-btn" onclick="gaNaarVraag(S.vraagIdx - 1)">◀ Vorige</button>
   <button class="nav-btn primary" onclick="gaNaarVraag(S.vraagIdx + 1)">Volgende ▶</button>
 </div>
 ```
@@ -274,6 +274,8 @@ let fullTranscript = "";
 let timerInterval = null;
 let timerSecs = 0;
 let wakeLock = null;
+let stilteTimer = null;
+let autoGepauzeerd = false;
 
 function $(id){ return document.getElementById(id); }
 function showError(m){ $("error-text").textContent=m; $("error-banner").classList.remove("hidden"); }
@@ -365,6 +367,11 @@ function toonVraag(idx){
   isPaused = false;
   fullTranscript = "";
 
+  // Verberg Vorige-knop op eerste vraag
+  const eersteVraag = idx === 0;
+  $("nav-vorige-btn").style.visibility = eersteVraag ? "hidden" : "visible";
+  $("review-vorige-btn").style.visibility = eersteVraag ? "hidden" : "visible";
+
   // Vul eerder gegeven antwoord alvast in review input
   const eerder = S.antwoorden[v.id] || "";
   $("review-input").value = eerder;
@@ -424,6 +431,14 @@ function toggleLuisteren(){
     $("live-box").innerHTML =
       "<span style='color:#1C2B20'>" + fullTranscript + "</span>" +
       "<span style='color:#A8C8AC'>" + interim + "</span>";
+
+    // Reset stilte-timer bij elke spraak-activiteit
+    clearTimeout(stilteTimer);
+    if(interim || final){
+      stilteTimer = setTimeout(()=>{
+        if(isListening){ autoPauzeWegensSilte(); }
+      }, 3000);
+    }
   };
 
   recognition.onerror = function(e){
@@ -449,6 +464,9 @@ function stopLuisteren(){
   isListening = false;
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
   clearInterval(timerInterval);
+  clearTimeout(stilteTimer);
+  stopStemDetectie();
+  autoGepauzeerd = false;
   releaseWakeLock();
   $("mic-btn").className = "mic-btn idle";
   $("mic-btn").textContent = "🎙️";
@@ -475,6 +493,7 @@ function pauzeeLuisteren(){
   if(zichtbaar) fullTranscript = zichtbaar + " ";
   isPaused = true;
   isListening = false;
+  clearTimeout(stilteTimer);
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
   clearInterval(timerInterval);
   releaseWakeLock();
@@ -482,6 +501,42 @@ function pauzeeLuisteren(){
   $("mic-btn").textContent = "🎙️";
   $("mic-hint").textContent = "⏸ Gepauzeerd — tik 🎙 om verder te gaan";
   $("timer-row").classList.add("hidden");
+}
+
+function autoPauzeWegensSilte(){
+  autoGepauzeerd = true;
+  pauzeeLuisteren();
+  $("mic-hint").textContent = "🔇 Stilte gedetecteerd — spreek om verder te gaan";
+  startStemDetectie();
+}
+
+let audioCtx = null, analyser = null, stemDetectieInterval = null;
+
+function startStemDetectie(){
+  if(!navigator.mediaDevices) return;
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    src.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    stemDetectieInterval = setInterval(()=>{
+      analyser.getByteFrequencyData(data);
+      const gem = data.reduce((a,b)=>a+b,0) / data.length;
+      if(gem > 18 && autoGepauzeerd && isPaused){
+        stopStemDetectie();
+        autoGepauzeerd = false;
+        toggleLuisteren();
+      }
+    }, 150);
+  }).catch(()=>{});
+}
+
+function stopStemDetectie(){
+  clearInterval(stemDetectieInterval);
+  stemDetectieInterval = null;
+  if(audioCtx){ audioCtx.close(); audioCtx = null; }
 }
 
 function wisInvoer(){
@@ -492,6 +547,9 @@ function wisInvoer(){
     clearInterval(timerInterval);
     releaseWakeLock();
   }
+  clearTimeout(stilteTimer);
+  stopStemDetectie();
+  autoGepauzeerd = false;
   fullTranscript = "";
   timerSecs = 0;
   $("mic-btn").className = "mic-btn idle";
@@ -557,7 +615,23 @@ function toonVerslag(){
   const scoreKleur = score >= 8 ? "#2D8045" : score >= 6 ? "#E67E22" : "#C0392B";
   const scoreEmoji = score >= 8 ? "😊" : score >= 6 ? "😐" : "😟";
 
+  // Controleer welke vragen leeg zijn
+  const leeg = VRAGEN.filter(v => !a[v.id] || !a[v.id].trim());
+  const waarschuwing = leeg.length > 0 ? `
+    <div style="background:#FFF8E1;border:1.5px solid #F9A825;border-radius:6px;padding:14px 16px;margin-bottom:0;display:flex;gap:12px;align-items:flex-start">
+      <span style="font-size:20px;flex-shrink:0">⚠️</span>
+      <div>
+        <p style="font-size:13px;font-weight:700;color:#7B5800;margin:0 0 4px">Niet alle vragen zijn ingevuld</p>
+        <p style="font-size:13px;color:#7B5800;margin:0;line-height:1.5">${leeg.map(v => v.icon + " " + v.label).join(" · ")}</p>
+        <button onclick="$('verslag-screen').classList.add('hidden');$('interview-screen').classList.remove('hidden');toonVraag(${VRAGEN.indexOf(leeg[0])})" 
+          style="margin-top:8px;background:none;border:1.5px solid #F9A825;border-radius:4px;padding:5px 12px;font-size:12px;font-weight:700;color:#7B5800;cursor:pointer">
+          Aanvullen
+        </button>
+      </div>
+    </div>` : "";
+
   $("verslag-screen").innerHTML = `
+    ${waarschuwing ? `<div class="card" style="padding:0;overflow:hidden">${waarschuwing}</div>` : ""}
     <div class="card" style="background:#3a7a2a;border:none;padding:20px;border-radius:6px">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:24px">🏢</div>
