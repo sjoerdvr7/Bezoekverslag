@@ -381,7 +381,16 @@ function toggleLuisteren(){
   }
 
   const hervatNaPauze = isPaused;
-  if(!hervatNaPauze){ fullTranscript = ""; timerSecs = 0; }
+  if(hervatNaPauze){
+    const liveEl = $("live-box");
+    const zichtbaar = liveEl ? liveEl.innerText.replace("Luisteren...","").trim() : "";
+    if(zichtbaar && zichtbaar.length > fullTranscript.trim().length){
+      fullTranscript = zichtbaar + " ";
+    }
+  } else {
+    fullTranscript = "";
+    timerSecs = 0;
+  }
   isPaused = false;
   isListening = true;
   $("mic-btn").className = "mic-btn recording";
