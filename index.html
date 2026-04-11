@@ -498,61 +498,82 @@ function autoPauzeWegensSilte(){
   autoGepauzeerd = true;
   pauzeeLuisteren();
   $("mic-hint").textContent = "🔇 Stilte gedetecteerd — spreek om verder te gaan";
-  startStemDetectie(false);
+  stemDetectieModus = "hervat";
 }
 
 let audioCtx = null, analyser = null, stemDetectieInterval = null;
+let stemStream = null;   // één permanente stream
+let stemDetectieModus = null; // "start" | "hervat" | null
 
 function wachtOpSpreekEnStart(){
-  // Wacht tot de TTS klaar is, dan luister op stem en start opname
   $("mic-hint").textContent = "🎙 Spreek om automatisch te starten...";
+  // Wacht tot TTS klaar is
   const wachtTTS = setInterval(()=>{
     if(!window.speechSynthesis.speaking){
       clearInterval(wachtTTS);
-      startStemDetectie(true);
+      stemDetectieModus = "start";
+      ensureStemDetectie();
     }
   }, 100);
-  // Veiligheidsnet na 5s
-  setTimeout(()=>{ clearInterval(wachtTTS); if(!isListening) startStemDetectie(true); }, 5000);
+  setTimeout(()=>{ clearInterval(wachtTTS); if(!isListening){ stemDetectieModus = "start"; ensureStemDetectie(); } }, 5000);
 }
 
-function startStemDetectie(isAutoStart){
-  if(!navigator.mediaDevices) {
-    // Fallback: direct starten als AudioContext niet beschikbaar
-    if(isAutoStart && !isListening) toggleLuisteren();
+function ensureStemDetectie(){
+  // Hergebruik bestaande stream/analyser als die er al is
+  if(analyser && stemDetectieInterval){
+    // Al actief, hoeft alleen modus te veranderen — doet de loop zelf
     return;
   }
+  if(stemStream){
+    _startAnalyseLoop();
+    return;
+  }
+  if(!navigator.mediaDevices){ _stemDetectieFallback(); return; }
   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {
+    stemStream = stream;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const src = audioCtx.createMediaStreamSource(stream);
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 512;
     src.connect(analyser);
-    const data = new Uint8Array(analyser.frequencyBinCount);
-    stemDetectieInterval = setInterval(()=>{
-      analyser.getByteFrequencyData(data);
-      const gem = data.reduce((a,b)=>a+b,0) / data.length;
-      if(gem > 18){
-        if(isAutoStart && !isListening){
-          stopStemDetectie();
-          toggleLuisteren();
-        } else if(!isAutoStart && autoGepauzeerd && isPaused){
-          stopStemDetectie();
-          autoGepauzeerd = false;
-          toggleLuisteren();
-        }
+    _startAnalyseLoop();
+  }).catch(()=>{ _stemDetectieFallback(); });
+}
+
+function _startAnalyseLoop(){
+  clearInterval(stemDetectieInterval);
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  stemDetectieInterval = setInterval(()=>{
+    if(!stemDetectieModus) return;
+    analyser.getByteFrequencyData(data);
+    const gem = data.reduce((a,b)=>a+b,0) / data.length;
+    if(gem > 18){
+      if(stemDetectieModus === "start" && !isListening){
+        stemDetectieModus = null;
+        toggleLuisteren();
+      } else if(stemDetectieModus === "hervat" && autoGepauzeerd && isPaused){
+        stemDetectieModus = null;
+        autoGepauzeerd = false;
+        toggleLuisteren();
       }
-    }, 150);
-  }).catch(()=>{
-    // Geen toegang tot audio voor detectie — val terug op directe start
-    if(isAutoStart && !isListening) setTimeout(()=>toggleLuisteren(), 500);
-  });
+    }
+  }, 150);
+}
+
+function _stemDetectieFallback(){
+  if(stemDetectieModus === "start" && !isListening) setTimeout(()=>toggleLuisteren(), 500);
+}
+
+function startStemDetectie(isAutoStart){
+  stemDetectieModus = isAutoStart ? "start" : "hervat";
+  ensureStemDetectie();
 }
 
 function stopStemDetectie(){
   clearInterval(stemDetectieInterval);
   stemDetectieInterval = null;
-  if(audioCtx){ audioCtx.close(); audioCtx = null; }
+  stemDetectieModus = null;
+  // Stream en analyser bewaren voor hergebruik — niet sluiten
 }
 
 function wisInvoer(){
@@ -620,6 +641,7 @@ function verwerkScore(tekst){
 }
 
 function bevestigAntwoord(){
+  if(isListening) stopLuisteren();
   flushNaarTekstveld();
   const antwoord = $("review-input").value.trim();
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
