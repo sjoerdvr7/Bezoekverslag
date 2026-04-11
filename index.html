@@ -380,8 +380,8 @@ function toggleLuisteren(){
     return;
   }
 
-  // Bij herstart na pauze: behoud bestaande transcript, anders leeg
-  if(!isPaused) fullTranscript = "";
+  const hervatNaPauze = isPaused;
+  if(!hervatNaPauze){ fullTranscript = ""; timerSecs = 0; }
   isPaused = false;
   isListening = true;
   $("mic-btn").className = "mic-btn recording";
@@ -392,8 +392,6 @@ function toggleLuisteren(){
   if(!fullTranscript) $("live-box").innerHTML = "<span style='color:#A8C8AC;font-style:italic'>Luisteren...</span>";
 
   requestWakeLock();
-
-  if(!isPaused) timerSecs = timerSecs || 0;
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     timerSecs++;
