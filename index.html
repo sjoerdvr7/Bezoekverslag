@@ -407,10 +407,13 @@ function toggleLuisteren(){
   }, 1000);
 
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.lang = "nl-NL";
-  recognition.continuous = true;
-  recognition.interimResults = true;
+  // Hergebruik pre-warmed recognition als die er al is, anders nieuw
+  if(!recognition || recognition.lang !== "nl-NL"){
+    recognition = new SR();
+    recognition.lang = "nl-NL";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+  }
 
   recognition.onresult = function(e){
     let final = "", interim = "";
@@ -543,10 +546,23 @@ function ensureStemDetectie(){
 function _startAnalyseLoop(){
   clearInterval(stemDetectieInterval);
   const data = new Uint8Array(analyser.frequencyBinCount);
+  let preWarmDone = false;
+
   stemDetectieInterval = setInterval(()=>{
     if(!stemDetectieModus) return;
     analyser.getByteFrequencyData(data);
     const gem = data.reduce((a,b)=>a+b,0) / data.length;
+
+    // Pre-warm: zodra stem in de buurt is (lagere drempel) alvast recognition klaarzetten
+    if(gem > 10 && !preWarmDone && stemDetectieModus === "start" && !isListening){
+      preWarmDone = true;
+      // Maak recognition object alvast aan zodat iOS hem kan initialiseren
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(SR && !recognition){
+        try{ recognition = new SR(); recognition.lang="nl-NL"; recognition.continuous=true; recognition.interimResults=true; }catch(e){}
+      }
+    }
+
     if(gem > 18){
       if(stemDetectieModus === "start" && !isListening){
         stemDetectieModus = null;
@@ -557,7 +573,7 @@ function _startAnalyseLoop(){
         toggleLuisteren();
       }
     }
-  }, 150);
+  }, 50);
 }
 
 function _stemDetectieFallback(){
