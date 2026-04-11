@@ -34,6 +34,12 @@
     .progress-fill{height:100%;background:#3a7a2a;transition:width 0.4s ease}
     .score-big{font-size:72px;font-weight:900;text-align:center;margin:8px 0}
     .nav-item{background:#fff;border-radius:0;padding:15px 16px;margin-bottom:0;display:flex;align-items:center;gap:14px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+    .mic-btn.paused{background:#E67E22;box-shadow:0 4px 12px rgba(230,126,34,0.35)}
+    .ctrl-btn{width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;user-select:none;transition:all 0.2s;background:#f0f0f0;color:#1a1a1a}
+    .ctrl-btn:active{transform:scale(0.92)}
+    .nav-btn{flex:1;padding:13px 10px;border-radius:6px;border:1.5px solid #ccc;background:#fff;color:#1a1a1a;font-size:15px;font-weight:600;cursor:pointer;touch-action:manipulation}
+    .nav-btn.primary{background:#3a7a2a;border-color:#3a7a2a;color:#fff}
+    .nav-btn:active{opacity:0.8}
   </style>
 </head>
 <body>
@@ -174,7 +180,13 @@
 
   <!-- Microfoon -->
   <div style="display:flex;flex-direction:column;align-items:center">
-    <button id="mic-btn" class="mic-btn idle" onclick="toggleLuisteren()">🎙️</button>
+
+    <!-- Knoppen rij: wis | mic | pauze -->
+    <div style="display:flex;align-items:center;gap:18px">
+      <button id="wis-btn" class="ctrl-btn" onclick="wisInvoer()" title="Invoer wissen">🗑️</button>
+      <button id="mic-btn" class="mic-btn idle" onclick="toggleLuisteren()">🎙️</button>
+      <button id="pauze-btn" class="ctrl-btn" onclick="pauzeeLuisteren()" title="Pauzeer opname">⏸️</button>
+    </div>
 
     <div id="timer-row" class="hidden" style="display:flex;align-items:center;gap:8px;margin-top:14px">
       <div class="rec-dot"></div>
@@ -192,7 +204,16 @@
 <div id="review-card" class="card hidden">
   <span class="label">✏️ Controleer of pas aan</span>
   <textarea id="review-input" class="textarea-field" style="min-height:80px" rows="3"></textarea>
-  <button class="btn-primary" style="margin-top:10px" onclick="bevestigAntwoord()">✅ Volgende vraag</button>
+  <div style="display:flex;gap:10px;margin-top:10px">
+    <button class="nav-btn" onclick="gaNaarVraag(S.vraagIdx - 1)">◀ Vorige</button>
+    <button class="nav-btn primary" onclick="bevestigAntwoord()">Volgende ▶</button>
+  </div>
+</div>
+
+<!-- Navigatie zonder invoer -->
+<div id="nav-card" class="card" style="display:flex;gap:10px">
+  <button class="nav-btn" onclick="gaNaarVraag(S.vraagIdx - 1)">◀ Vorige</button>
+  <button class="nav-btn primary" onclick="gaNaarVraag(S.vraagIdx + 1)">Volgende ▶</button>
 </div>
 ```
 
@@ -248,13 +269,27 @@ const VRAGEN = [
 let S = { vraagIdx: 0, antwoorden: {}, datum: new Date().toISOString().split("T")[0] };
 let recognition = null;
 let isListening = false;
+let isPaused = false;
 let fullTranscript = "";
 let timerInterval = null;
 let timerSecs = 0;
+let wakeLock = null;
 
 function $(id){ return document.getElementById(id); }
 function showError(m){ $("error-text").textContent=m; $("error-banner").classList.remove("hidden"); }
 function hideError(){ $("error-banner").classList.add("hidden"); }
+
+// ── Wake Lock ────────────────────────────────────────────────────
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+function releaseWakeLock(){
+  if(wakeLock){ wakeLock.release(); wakeLock = null; }
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible' && isListening) requestWakeLock();
+});
 
 // ── Stepbar ──────────────────────────────────────────────────────
 function renderStepBar(current){
@@ -311,6 +346,7 @@ function spreekTekst(tekst){
 
 function toonVraag(idx){
   if(idx >= VRAGEN.length){ toonVerslag(); return; }
+  if(idx < 0) return;
   S.vraagIdx = idx;
   const v = VRAGEN[idx];
   renderStepBar(idx);
@@ -319,13 +355,20 @@ function toonVraag(idx){
   $("vraag-hint").textContent = v.hint;
   spreekTekst(v.vraag);
   $("review-card").classList.add("hidden");
+  $("nav-card").style.display = "flex";
   $("live-box").classList.add("hidden");
   $("live-box").innerHTML = "";
   $("timer-row").classList.add("hidden");
   $("mic-btn").className = "mic-btn idle";
   $("mic-btn").textContent = "🎙️";
   $("mic-hint").textContent = "🎙 Tik om te beginnen";
+  isPaused = false;
   fullTranscript = "";
+
+  // Vul eerder gegeven antwoord alvast in review input
+  const eerder = S.antwoorden[v.id] || "";
+  $("review-input").value = eerder;
+  if(eerder){ $("review-card").classList.remove("hidden"); $("nav-card").style.display = "none"; }
 }
 
 // ── Opname ───────────────────────────────────────────────────────
@@ -337,16 +380,20 @@ function toggleLuisteren(){
     return;
   }
 
-  fullTranscript = "";
+  // Bij herstart na pauze: behoud bestaande transcript, anders leeg
+  if(!isPaused) fullTranscript = "";
+  isPaused = false;
   isListening = true;
   $("mic-btn").className = "mic-btn recording";
   $("mic-btn").textContent = "⏹️";
   $("mic-hint").textContent = "⏹ Tik om te stoppen";
   $("timer-row").classList.remove("hidden");
   $("live-box").classList.remove("hidden");
-  $("live-box").innerHTML = "<span style='color:#A8C8AC;font-style:italic'>Luisteren...</span>";
+  if(!fullTranscript) $("live-box").innerHTML = "<span style='color:#A8C8AC;font-style:italic'>Luisteren...</span>";
 
-  timerSecs = 0;
+  requestWakeLock();
+
+  if(!isPaused) timerSecs = timerSecs || 0;
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     timerSecs++;
@@ -394,12 +441,12 @@ function stopLuisteren(){
   isListening = false;
   if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
   clearInterval(timerInterval);
+  releaseWakeLock();
   $("mic-btn").className = "mic-btn idle";
   $("mic-btn").textContent = "🎙️";
   $("mic-hint").textContent = "🎙 Tik om opnieuw op te nemen";
   $("timer-row").classList.add("hidden");
 
-  // Haal tekst op en verwerk per vraagtype
   const liveEl = $("live-box");
   let tekst = fullTranscript.trim() || (liveEl ? liveEl.innerText.replace("Luisteren...","").trim() : "");
 
@@ -408,7 +455,51 @@ function stopLuisteren(){
 
   $("review-input").value = tekst;
   $("review-card").classList.remove("hidden");
+  $("nav-card").style.display = "none";
   setTimeout(()=>{ $("review-card").scrollIntoView({behavior:"smooth",block:"start"}); }, 100);
+}
+
+function pauzeeLuisteren(){
+  if(!isListening) return;
+  isPaused = true;
+  isListening = false;
+  if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
+  clearInterval(timerInterval);
+  releaseWakeLock();
+  $("mic-btn").className = "mic-btn paused";
+  $("mic-btn").textContent = "🎙️";
+  $("mic-hint").textContent = "⏸ Gepauzeerd — tik 🎙 om verder te gaan";
+  $("timer-row").classList.add("hidden");
+}
+
+function wisInvoer(){
+  if(isListening || isPaused){
+    isListening = false;
+    isPaused = false;
+    if(recognition){ try{ recognition.abort(); }catch(e){} recognition = null; }
+    clearInterval(timerInterval);
+    releaseWakeLock();
+  }
+  fullTranscript = "";
+  timerSecs = 0;
+  $("mic-btn").className = "mic-btn idle";
+  $("mic-btn").textContent = "🎙️";
+  $("mic-hint").textContent = "🎙 Tik om te beginnen";
+  $("timer-row").classList.add("hidden");
+  $("live-box").classList.add("hidden");
+  $("live-box").innerHTML = "";
+  $("review-card").classList.add("hidden");
+  $("review-input").value = "";
+  $("nav-card").style.display = "flex";
+}
+
+function gaNaarVraag(idx){
+  if(isListening) stopLuisteren();
+  if(isPaused){ isPaused = false; }
+  // Sla huidig antwoord op als er iets in review-input staat
+  const huidig = $("review-input").value.trim();
+  if(huidig) S.antwoorden[VRAGEN[S.vraagIdx].id] = huidig;
+  toonVraag(idx);
 }
 
 function verwerkNummer(tekst){
@@ -432,11 +523,9 @@ function bevestigAntwoord(){
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   var volgende = S.vraagIdx + 1;
+  if(volgende >= VRAGEN.length){ toonVerslag(); return; }
   toonVraag(volgende);
-  // Start opname binnen 500ms van tap — Safari staat dit toe
-  if(volgende < VRAGEN.length){
-    setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 500);
-  }
+  setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 500);
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
@@ -514,7 +603,8 @@ function mailVerslag(){
     `AFSPRAKEN\n${a.afspraken||"—"}\n\n` +
     `KLANTTEVREDENHEID: ${a.score||"—"}/10`
   );
-  window.location.href = "mailto:" + email + "?subject=" + subject + "&body=" + body;
+  // Stuur naar jezelf toe: from = to via reply-to header
+  window.location.href = "mailto:" + email + "?subject=" + subject + "&body=" + body + "&reply-to=" + encodeURIComponent(email);
 }
 
 function downloadICS(){
@@ -574,6 +664,9 @@ function downloadICS(){
 }
 
 function resetApp(){
+  releaseWakeLock();
+  isPaused = false;
+  timerSecs = 0;
   S = { vraagIdx:0, antwoorden:{}, datum:new Date().toISOString().split("T")[0] };
   $("verslag-screen").classList.add("hidden");
   $("verslag-screen").innerHTML = "";
