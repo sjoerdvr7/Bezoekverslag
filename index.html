@@ -324,16 +324,7 @@ function startInterview(){
   $("start-screen").classList.add("hidden");
   $("interview-screen").classList.remove("hidden");
   toonVraag(0);
-  // Eerste vraag: wacht tot spraak klaar is via speechSynthesis boundary
-  // Controleer elke 200ms of spraak klaar is, start dan opname
-  var wacht = setInterval(function(){
-    if(!window.speechSynthesis.speaking){
-      clearInterval(wacht);
-      if(!isListening) toggleLuisteren();
-    }
-  }, 200);
-  // Veiligheidsnet: start altijd na 4 seconden
-  setTimeout(function(){ if(!isListening){ clearInterval(wacht); toggleLuisteren(); } }, 4000);
+  wachtOpSpreekEnStart();
 }
 
 function spreekTekst(tekst){
@@ -507,13 +498,30 @@ function autoPauzeWegensSilte(){
   autoGepauzeerd = true;
   pauzeeLuisteren();
   $("mic-hint").textContent = "🔇 Stilte gedetecteerd — spreek om verder te gaan";
-  startStemDetectie();
+  startStemDetectie(false);
 }
 
 let audioCtx = null, analyser = null, stemDetectieInterval = null;
 
-function startStemDetectie(){
-  if(!navigator.mediaDevices) return;
+function wachtOpSpreekEnStart(){
+  // Wacht tot de TTS klaar is, dan luister op stem en start opname
+  $("mic-hint").textContent = "🎙 Spreek om automatisch te starten...";
+  const wachtTTS = setInterval(()=>{
+    if(!window.speechSynthesis.speaking){
+      clearInterval(wachtTTS);
+      startStemDetectie(true);
+    }
+  }, 100);
+  // Veiligheidsnet na 5s
+  setTimeout(()=>{ clearInterval(wachtTTS); if(!isListening) startStemDetectie(true); }, 5000);
+}
+
+function startStemDetectie(isAutoStart){
+  if(!navigator.mediaDevices) {
+    // Fallback: direct starten als AudioContext niet beschikbaar
+    if(isAutoStart && !isListening) toggleLuisteren();
+    return;
+  }
   navigator.mediaDevices.getUserMedia({audio:true}).then(stream => {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const src = audioCtx.createMediaStreamSource(stream);
@@ -524,13 +532,21 @@ function startStemDetectie(){
     stemDetectieInterval = setInterval(()=>{
       analyser.getByteFrequencyData(data);
       const gem = data.reduce((a,b)=>a+b,0) / data.length;
-      if(gem > 18 && autoGepauzeerd && isPaused){
-        stopStemDetectie();
-        autoGepauzeerd = false;
-        toggleLuisteren();
+      if(gem > 18){
+        if(isAutoStart && !isListening){
+          stopStemDetectie();
+          toggleLuisteren();
+        } else if(!isAutoStart && autoGepauzeerd && isPaused){
+          stopStemDetectie();
+          autoGepauzeerd = false;
+          toggleLuisteren();
+        }
       }
     }, 150);
-  }).catch(()=>{});
+  }).catch(()=>{
+    // Geen toegang tot audio voor detectie — val terug op directe start
+    if(isAutoStart && !isListening) setTimeout(()=>toggleLuisteren(), 500);
+  });
 }
 
 function stopStemDetectie(){
@@ -563,10 +579,25 @@ function wisInvoer(){
   $("nav-card").style.display = "flex";
 }
 
+function flushNaarTekstveld(){
+  // Haal tekst op uit live-box als tekstveld nog leeg/verouderd is
+  const liveEl = $("live-box");
+  const liveTekst = (fullTranscript.trim() || (liveEl ? liveEl.innerText.replace("Luisteren...","").trim() : ""));
+  if(!liveTekst) return;
+  const id = VRAGEN[S.vraagIdx].id;
+  let tekst = liveTekst;
+  if(id === "nummer") tekst = verwerkNummer(tekst);
+  if(id === "score")  tekst = verwerkScore(tekst);
+  // Alleen overschrijven als tekstveld leeg is of live-box meer heeft
+  if(!$("review-input").value.trim() || tekst.length > $("review-input").value.trim().length){
+    $("review-input").value = tekst;
+  }
+}
+
 function gaNaarVraag(idx){
   if(isListening) stopLuisteren();
   if(isPaused){ isPaused = false; }
-  // Sla huidig antwoord op als er iets in review-input staat
+  flushNaarTekstveld();
   const huidig = $("review-input").value.trim();
   if(huidig) S.antwoorden[VRAGEN[S.vraagIdx].id] = huidig;
   toonVraag(idx);
@@ -589,13 +620,14 @@ function verwerkScore(tekst){
 }
 
 function bevestigAntwoord(){
+  flushNaarTekstveld();
   const antwoord = $("review-input").value.trim();
   if(!antwoord){ showError("Antwoord is leeg. Probeer opnieuw."); return; }
   S.antwoorden[VRAGEN[S.vraagIdx].id] = antwoord;
   var volgende = S.vraagIdx + 1;
   if(volgende >= VRAGEN.length){ toonVerslag(); return; }
   toonVraag(volgende);
-  setTimeout(function(){ if(!isListening) toggleLuisteren(); }, 500);
+  wachtOpSpreekEnStart();
 }
 
 // ── Verslag ──────────────────────────────────────────────────────
